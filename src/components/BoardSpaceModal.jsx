@@ -11,6 +11,16 @@ const COLOR_BUTTON_STYLES = {
   white: "bg-white border-gray-300 text-gray-800",
 };
 
+const SPACE_TYPE_OPTIONS = [
+  { value: "start", label: "スタート" },
+  { value: "normal", label: "通常" },
+  { value: "lucky", label: "ラッキー" },
+  { value: "danger", label: "ピンチ" },
+  { value: "payday", label: "給料日" },
+  { value: "stop", label: "停止" },
+  { value: "goal", label: "ゴール" },
+];
+
 export default function BoardSpaceModal({
   isOpen,
   space,
@@ -20,6 +30,10 @@ export default function BoardSpaceModal({
 }) {
   const [text, setText] = useState("");
   const [color, setColor] = useState("blue");
+  const [type, setType] = useState("normal");
+  const [money, setMoney] = useState(0);
+  const [addCarPeople, setAddCarPeople] = useState(0);
+  const [addDebt, setAddDebt] = useState(0);
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
 
@@ -30,6 +44,10 @@ export default function BoardSpaceModal({
 
     setText(space.text ?? "");
     setColor(space.color ?? "blue");
+    setType(space.type ?? "normal");
+    setMoney(space.money ?? 0);
+    setAddCarPeople(space.addCarPeople ?? 0);
+    setAddDebt(space.addDebt ?? 0);
     setX(Math.round(space.x ?? 0));
     setY(Math.round(space.y ?? 0));
   }, [space]);
@@ -64,6 +82,21 @@ export default function BoardSpaceModal({
           </div>
 
           <div>
+            <label className="mb-2 block text-sm font-bold text-gray-800">マスの種類</label>
+            <select
+              value={type}
+              onChange={(event) => setType(event.target.value)}
+              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {SPACE_TYPE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
             <div className="mb-2 flex items-center gap-2 text-sm font-bold text-gray-800">
               <Palette className="h-4 w-4" /> マスの色
             </div>
@@ -80,6 +113,39 @@ export default function BoardSpaceModal({
                   {option.label}
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="mb-2 text-sm font-bold text-gray-800">効果設定</div>
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                <div className="mb-1 text-xs font-bold text-gray-500">所持金変化</div>
+                <input
+                  type="number"
+                  value={money}
+                  onChange={(event) => setMoney(Number(event.target.value))}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </label>
+              <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                <div className="mb-1 text-xs font-bold text-gray-500">同乗者増減</div>
+                <input
+                  type="number"
+                  value={addCarPeople}
+                  onChange={(event) => setAddCarPeople(Number(event.target.value))}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </label>
+              <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                <div className="mb-1 text-xs font-bold text-gray-500">借金増減</div>
+                <input
+                  type="number"
+                  value={addDebt}
+                  onChange={(event) => setAddDebt(Number(event.target.value))}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </label>
             </div>
           </div>
 
@@ -122,7 +188,16 @@ export default function BoardSpaceModal({
               type="button"
               onClick={() => {
                 const position = clampBoardPoint(x, y);
-                onSave({ ...space, text, color, ...position });
+                onSave({
+                  ...space,
+                  text,
+                  color,
+                  type,
+                  money,
+                  addCarPeople,
+                  addDebt,
+                  ...position,
+                });
               }}
               className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
             >

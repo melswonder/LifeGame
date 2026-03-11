@@ -57,6 +57,6 @@ export const downloadGameState = (state) => {
   downloadJson("life-game-state.json", serializeGameState(state));
 };
 
-export const downloadBoardState = (board) => {
-  downloadJson("life-game-board.json", serializeBoardState(board));
+export const downloadBoardState = (board, branches) => {
+  downloadJson("life-game-board.json", serializeBoardState(board, branches));
 };

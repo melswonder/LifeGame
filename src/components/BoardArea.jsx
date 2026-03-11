@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { LocateFixed, Minus, Plus } from "lucide-react";
+import { GitBranch, LocateFixed, Minus, Plus, Route, Undo2 } from "lucide-react";
+import { buildBoardRouteSegments } from "../lib/boardBranches.js";
 import {
   BOARD_CANVAS,
   BOARD_FORESTS,
@@ -50,10 +51,16 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
 export default function BoardArea({
   board,
+  branches,
   players,
   isEditing,
+  mapEditTool,
+  branchStartId,
   onEditSpace,
   onMoveSpace,
+  onChangeEditTool,
+  onSelectBranchSpace,
+  onRemoveLastBranch,
 }) {
   const viewportRef = useRef(null);
   const dragStateRef = useRef(null);
@@ -70,14 +77,22 @@ export default function BoardArea({
     }));
   }, [board]);
 
-  const mainRoutePath = useMemo(
-    () => buildPolylinePath(mapSpaces.map(({ x, y }) => ({ x, y }))),
-    [mapSpaces],
+  const routePaths = useMemo(
+    () => buildBoardRouteSegments(mapSpaces, branches).map((points) => buildPolylinePath(points)),
+    [branches, mapSpaces],
   );
 
   const scenicTrailPaths = useMemo(
     () => SCENIC_TRAILS.map((trail) => buildPolylinePath(trail)),
     [],
+  );
+  const branchStartIds = useMemo(
+    () => new Set((branches ?? []).map((branch) => branch.startId)),
+    [branches],
+  );
+  const branchEndIds = useMemo(
+    () => new Set((branches ?? []).map((branch) => branch.endId)),
+    [branches],
   );
 
   const scaledWidth = BOARD_CANVAS.width * zoom;
@@ -243,7 +258,13 @@ export default function BoardArea({
 
         <div className="pointer-events-auto flex items-center gap-2 rounded-2xl border border-white/70 bg-white/85 px-4 py-2 text-xs font-bold text-gray-700 shadow-lg backdrop-blur">
           <LocateFixed className="h-4 w-4 text-emerald-600" />
-          {isEditing ? "マスをドラッグで移動 / クリックで編集" : "ドラッグで移動 / ボタンで拡大縮小"}
+          {isEditing
+            ? mapEditTool === "branch"
+              ? branchStartId === null
+                ? "分岐の開始マスを選択"
+                : `開始マス ${branchStartId} を選択済み / 合流先を選択`
+              : "マスをドラッグで移動 / クリックで編集"
+            : "ドラッグで移動 / ボタンで拡大縮小"}
           {isEditing && (
             <span className="animate-pulse rounded-full bg-blue-500 px-3 py-1 text-white">
               編集中
@@ -251,6 +272,44 @@ export default function BoardArea({
           )}
         </div>
       </div>
+
+      {isEditing && (
+        <div className="absolute left-6 top-24 z-30 flex flex-wrap items-center gap-2 rounded-2xl border border-white/70 bg-white/90 p-3 shadow-lg backdrop-blur">
+          <button
+            type="button"
+            onClick={() => {
+              onChangeEditTool("space");
+            }}
+            className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
+              mapEditTool === "space"
+                ? "bg-gray-900 text-white"
+                : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            <Route className="h-4 w-4" /> マス編集
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              onChangeEditTool("branch");
+            }}
+            className={`flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${
+              mapEditTool === "branch"
+                ? "bg-amber-500 text-white"
+                : "border border-gray-300 bg-white text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            <GitBranch className="h-4 w-4" /> 分岐作成
+          </button>
+          <button
+            type="button"
+            onClick={onRemoveLastBranch}
+            className="flex items-center gap-2 rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-bold text-gray-700 hover:bg-gray-100"
+          >
+            <Undo2 className="h-4 w-4" /> 最後の分岐を解除
+          </button>
+        </div>
+      )}
 
       <div
         ref={viewportRef}
@@ -381,34 +440,38 @@ export default function BoardArea({
                 />
               ))}
 
-              <path
-                d={mainRoutePath}
-                fill="none"
-                stroke="#92400e"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="42"
-                opacity="0.95"
-              />
-              <path
-                d={mainRoutePath}
-                fill="none"
-                stroke="#fcd34d"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="26"
-                opacity="0.95"
-              />
-              <path
-                d={mainRoutePath}
-                fill="none"
-                stroke="#fef3c7"
-                strokeDasharray="8 18"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="6"
-                opacity="0.95"
-              />
+              {routePaths.map((routePath, index) => (
+                <g key={index}>
+                  <path
+                    d={routePath}
+                    fill="none"
+                    stroke="#92400e"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="42"
+                    opacity="0.95"
+                  />
+                  <path
+                    d={routePath}
+                    fill="none"
+                    stroke="#fcd34d"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="26"
+                    opacity="0.95"
+                  />
+                  <path
+                    d={routePath}
+                    fill="none"
+                    stroke="#fef3c7"
+                    strokeDasharray="8 18"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="6"
+                    opacity="0.95"
+                  />
+                </g>
+              ))}
             </svg>
 
             {BOARD_HOUSES.map((house) => (
@@ -449,6 +512,9 @@ export default function BoardArea({
                   : space.type === "goal"
                     ? "scale-[1.12] ring-4 ring-yellow-100"
                     : "";
+              const isBranchStart = branchStartIds.has(space.id);
+              const isBranchEnd = branchEndIds.has(space.id);
+              const isBranchDraft = branchStartId === space.id;
 
               return (
                 <button
@@ -456,7 +522,11 @@ export default function BoardArea({
                   type="button"
                   data-space-button="true"
                   className={`absolute z-20 flex aspect-square flex-col items-center justify-center rounded-[28px] border-4 p-2 text-center shadow-[0_10px_25px_rgba(15,23,42,0.18)] transition-transform hover:-translate-y-1 ${bgColor} ${accentClass} ${
-                    isEditing ? "cursor-pointer ring-blue-400 hover:ring-4" : "cursor-default"
+                    isEditing && mapEditTool === "space"
+                      ? "cursor-pointer ring-blue-400 hover:ring-4"
+                      : isEditing && mapEditTool === "branch"
+                        ? "cursor-pointer ring-amber-300 hover:ring-4"
+                        : "cursor-default"
                   }`}
                   style={{
                     left: space.x - BOARD_NODE_SIZE / 2,
@@ -464,8 +534,15 @@ export default function BoardArea({
                     width: BOARD_NODE_SIZE,
                     height: BOARD_NODE_SIZE,
                   }}
+                  onClick={() => {
+                    if (!isEditing || mapEditTool !== "branch") {
+                      return;
+                    }
+
+                    onSelectBranchSpace(space.id);
+                  }}
                   onPointerDown={(event) => {
-                    if (!isEditing || event.button !== 0) {
+                    if (!isEditing || mapEditTool !== "space" || event.button !== 0) {
                       return;
                     }
 
@@ -500,6 +577,7 @@ export default function BoardArea({
 
                     if (
                       !isEditing ||
+                      mapEditTool !== "space" ||
                       !dragState ||
                       !viewport ||
                       dragState.id !== space.id ||
@@ -540,6 +618,7 @@ export default function BoardArea({
 
                     if (
                       !isEditing ||
+                      mapEditTool !== "space" ||
                       !dragState ||
                       dragState.id !== space.id ||
                       dragState.pointerId !== event.pointerId
@@ -578,6 +657,12 @@ export default function BoardArea({
                   <div className="absolute -left-2 -top-2 z-20 flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-800 bg-white text-[10px] font-black text-gray-800 shadow-sm">
                     {space.id}
                   </div>
+
+                  {(isBranchStart || isBranchEnd || isBranchDraft) && (
+                    <div className="absolute -right-2 -top-2 z-20 rounded-full border border-gray-800 bg-white px-2 py-1 text-[9px] font-black text-gray-800 shadow-sm">
+                      {isBranchDraft ? "選択中" : isBranchStart ? "分岐" : "合流"}
+                    </div>
+                  )}
 
                   <div className={`line-clamp-3 text-[10px] font-bold leading-tight ${textColor}`}>
                     {space.text}

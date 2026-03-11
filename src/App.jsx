@@ -19,6 +19,10 @@ import {
   PLAYER_CONFIG,
 } from "./lib/gameState.js";
 import {
+  createBranchBetweenSpaces,
+  removeBranchById,
+} from "./lib/boardBranches.js";
+import {
   clearGameState,
   downloadBoardState,
   downloadGameState,
@@ -32,21 +36,32 @@ export default function App() {
     [],
   );
   const [board, setBoard] = useState(initialState.board);
+  const [branches, setBranches] = useState(initialState.branches ?? []);
   const [players, setPlayers] = useState(initialState.players);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(initialState.currentPlayerIndex);
   const [isEditing, setIsEditing] = useState(initialState.isEditing);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingSpaceId, setEditingSpaceId] = useState(null);
+  const [mapEditTool, setMapEditTool] = useState("space");
+  const [branchStartId, setBranchStartId] = useState(null);
 
   useEffect(() => {
-    saveGameState({ board, players, currentPlayerIndex, isEditing });
-  }, [board, players, currentPlayerIndex, isEditing]);
+    saveGameState({ board, branches, players, currentPlayerIndex, isEditing });
+  }, [board, branches, players, currentPlayerIndex, isEditing]);
 
   useEffect(() => {
     if (!isEditing) {
       setEditingSpaceId(null);
+      setMapEditTool("space");
+      setBranchStartId(null);
     }
   }, [isEditing]);
+
+  useEffect(() => {
+    if (mapEditTool !== "branch") {
+      setBranchStartId(null);
+    }
+  }, [mapEditTool]);
 
   const currentPlayer = players[currentPlayerIndex] ?? players[0];
   const editingSpace = board.find((space) => space.id === editingSpaceId) ?? null;
@@ -56,6 +71,9 @@ export default function App() {
   };
 
   const handleOpenSpaceEditor = (space) => {
+    if (mapEditTool !== "space") {
+      return;
+    }
     setEditingSpaceId(space.id);
   };
 
@@ -64,6 +82,10 @@ export default function App() {
   };
 
   const handleMoveSpace = (id, updates) => {
+    if (mapEditTool !== "space") {
+      return;
+    }
+
     setBoard((previous) =>
       previous.map((space) => {
         if (space.id !== id) {
@@ -74,6 +96,46 @@ export default function App() {
         return { ...space, ...updates, ...position };
       }),
     );
+  };
+
+  const handleSelectBranchSpace = (spaceId) => {
+    if (!isEditing || mapEditTool !== "branch") {
+      return;
+    }
+
+    if (branchStartId === null) {
+      setBranchStartId(spaceId);
+      return;
+    }
+
+    if (branchStartId === spaceId) {
+      setBranchStartId(null);
+      return;
+    }
+
+    const result = createBranchBetweenSpaces(board, branches, branchStartId, spaceId);
+    if (result.error) {
+      window.alert(result.error);
+      return;
+    }
+
+    setBoard(result.board);
+    setBranches(result.branches);
+    setBranchStartId(null);
+  };
+
+  const handleRemoveLastBranch = () => {
+    if (branches.length === 0) {
+      return;
+    }
+
+    const lastBranch = [...branches].sort(
+      (left, right) => (right.createdAt ?? 0) - (left.createdAt ?? 0),
+    )[0];
+    const result = removeBranchById(board, branches, lastBranch.id);
+    setBoard(result.board);
+    setBranches(result.branches);
+    setBranchStartId(null);
   };
 
   const handleUpdatePlayer = (id, updates) => {
@@ -126,11 +188,11 @@ export default function App() {
   };
 
   const handleExportState = () => {
-    downloadGameState({ board, players, currentPlayerIndex, isEditing });
+    downloadGameState({ board, branches, players, currentPlayerIndex, isEditing });
   };
 
   const handleExportBoard = () => {
-    downloadBoardState(board);
+    downloadBoardState(board, branches);
   };
 
   const handleImportState = async (file) => {
@@ -138,10 +200,13 @@ export default function App() {
       const text = await file.text();
       const nextState = normalizeGameState(JSON.parse(text));
       setBoard(nextState.board);
+      setBranches(nextState.branches);
       setPlayers(nextState.players);
       setCurrentPlayerIndex(nextState.currentPlayerIndex);
       setIsEditing(nextState.isEditing);
       setEditingSpaceId(null);
+      setMapEditTool("space");
+      setBranchStartId(null);
       window.alert("JSON の読み込みが完了しました。");
     } catch {
       window.alert("JSON の読み込みに失敗しました。ファイル形式を確認してください。");
@@ -151,15 +216,18 @@ export default function App() {
   const handleImportBoard = async (file) => {
     try {
       const text = await file.text();
-      const nextBoard = normalizeBoardFile(JSON.parse(text));
-      setBoard(nextBoard);
+      const nextBoardState = normalizeBoardFile(JSON.parse(text));
+      setBoard(nextBoardState.board);
+      setBranches(nextBoardState.branches);
       setPlayers((previous) =>
         previous.map((player) => ({
           ...player,
-          position: Math.min(player.position, nextBoard.length - 1),
+          position: Math.min(player.position, nextBoardState.board.length - 1),
         })),
       );
       setEditingSpaceId(null);
+      setMapEditTool("space");
+      setBranchStartId(null);
       window.alert("盤面 JSON の読み込みが完了しました。");
     } catch {
       window.alert("盤面 JSON の読み込みに失敗しました。ファイル形式を確認してください。");
@@ -170,10 +238,13 @@ export default function App() {
     const nextState = createInitialGameState();
     clearGameState();
     setBoard(nextState.board);
+    setBranches(nextState.branches);
     setPlayers(nextState.players);
     setCurrentPlayerIndex(nextState.currentPlayerIndex);
     setIsEditing(nextState.isEditing);
     setEditingSpaceId(null);
+    setMapEditTool("space");
+    setBranchStartId(null);
   };
 
   return (
@@ -181,10 +252,16 @@ export default function App() {
       <div className="h-full min-w-0 flex-[2] pb-4">
         <BoardArea
           board={board}
+          branches={branches}
           players={players}
           isEditing={isEditing}
+          mapEditTool={mapEditTool}
+          branchStartId={branchStartId}
           onEditSpace={handleOpenSpaceEditor}
           onMoveSpace={handleMoveSpace}
+          onChangeEditTool={setMapEditTool}
+          onSelectBranchSpace={handleSelectBranchSpace}
+          onRemoveLastBranch={handleRemoveLastBranch}
         />
       </div>
 

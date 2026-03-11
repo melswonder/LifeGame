@@ -1,6 +1,7 @@
 import boardSpacesData from "../data/boardSpaces.json";
 import jobOptions from "../data/jobs.json";
 import playerConfig from "../data/playerConfig.json";
+import { normalizeBranches } from "./boardBranches.js";
 import { BOARD_CANVAS, BOARD_NODE_SIZE, getBoardLayout } from "./boardMap.js";
 
 export const JOB_OPTIONS = jobOptions;
@@ -131,6 +132,7 @@ export const createInitialBoard = () => {
 
 export const createInitialGameState = () => ({
   board: createInitialBoard(),
+  branches: [],
   players: createInitialPlayers(),
   currentPlayerIndex: 0,
   isEditing: false,
@@ -145,8 +147,12 @@ export const normalizeBoard = (board) => {
   return board.map((space, index) => normalizeSpace(space, index, layout));
 };
 
-export const normalizeBoardFile = (rawBoard) =>
-  normalizeBoard(Array.isArray(rawBoard) ? rawBoard : rawBoard?.board);
+export const normalizeBoardFile = (rawBoard) => {
+  const board = normalizeBoard(Array.isArray(rawBoard) ? rawBoard : rawBoard?.board);
+  const branches = normalizeBranches(rawBoard?.branches, board.length);
+
+  return { board, branches };
+};
 
 export const normalizePlayers = (players) => {
   if (!Array.isArray(players) || players.length === 0) {
@@ -165,6 +171,7 @@ export const normalizePlayers = (players) => {
 export const normalizeGameState = (rawState) => {
   const defaultState = createInitialGameState();
   const board = normalizeBoard(rawState?.board);
+  const branches = normalizeBranches(rawState?.branches, board.length);
   const players = normalizePlayers(rawState?.players).map((player) => ({
     ...player,
     position: clamp(player.position, 0, board.length - 1),
@@ -172,6 +179,7 @@ export const normalizeGameState = (rawState) => {
 
   return {
     board,
+    branches,
     players,
     currentPlayerIndex: clamp(
       getNumber(rawState?.currentPlayerIndex, defaultState.currentPlayerIndex),
@@ -218,5 +226,12 @@ export const formatCurrency = (amount) => `${numberFormatter.format(amount)}円`
 export const serializeGameState = (state) =>
   JSON.stringify(normalizeGameState(state), null, 2);
 
-export const serializeBoardState = (board) =>
-  JSON.stringify({ board: normalizeBoard(board) }, null, 2);
+export const serializeBoardState = (board, branches) =>
+  JSON.stringify(
+    {
+      board: normalizeBoard(board),
+      branches: normalizeBranches(branches, board.length),
+    },
+    null,
+    2,
+  );

@@ -1,8 +1,4 @@
-import {
-  normalizeGameState,
-  serializeBoardState,
-  serializeGameState,
-} from "./gameState";
+import { normalizeGameState, serializeGameState } from "./gameState";
 
 export const GAME_STORAGE_KEY = "life-game-state-v1";
 
@@ -55,8 +51,4 @@ const downloadJson = (filename, content) => {
 
 export const downloadGameState = (state) => {
   downloadJson("life-game-state.json", serializeGameState(state));
-};
-
-export const downloadBoardState = (board, branches) => {
-  downloadJson("life-game-board.json", serializeBoardState(board, branches));
 };

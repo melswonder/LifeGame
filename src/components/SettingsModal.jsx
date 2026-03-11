@@ -24,12 +24,9 @@ export default function SettingsModal({
   onChangePlayerCount,
   onExportState,
   onImportState,
-  onExportBoard,
-  onImportBoard,
   onResetState,
 }) {
   const importInputRef = useRef(null);
-  const boardImportInputRef = useRef(null);
 
   if (!isOpen) {
     return null;
@@ -215,75 +212,31 @@ export default function SettingsModal({
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
             <div className="mb-3 font-bold text-gray-800">JSON 管理</div>
             <div className="mb-3 text-xs text-gray-500">
-              現在の盤面、分岐、マップ座標、プレイヤー状態を JSON として書き出し、後で読み戻せます。
+              現在の盤面、分岐、マップ座標、プレイヤー状態を 1 つの JSON として書き出し、後で読み戻せます。
             </div>
-            <div className="mb-4">
-              <div className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">
-                ゲーム全体
-              </div>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
-                <button
-                  type="button"
-                  onClick={onExportState}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-3 py-2 text-sm font-bold text-white hover:bg-gray-800"
-                >
-                  <Download className="h-4 w-4" /> 書き出し
-                </button>
-                <button
-                  type="button"
-                  onClick={() => importInputRef.current?.click()}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white hover:bg-blue-700"
-                >
-                  <Upload className="h-4 w-4" /> 読み込み
-                </button>
-                <button
-                  type="button"
-                  onClick={onResetState}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-gray-200 px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-300"
-                >
-                  <RotateCcw className="h-4 w-4" /> 初期化
-                </button>
-              </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+              <button
+                type="button"
+                onClick={onExportState}
+                className="flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-3 py-2 text-sm font-bold text-white hover:bg-gray-800"
+              >
+                <Download className="h-4 w-4" /> 書き出し
+              </button>
+              <button
+                type="button"
+                onClick={() => importInputRef.current?.click()}
+                className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-3 py-2 text-sm font-bold text-white hover:bg-blue-700"
+              >
+                <Upload className="h-4 w-4" /> 読み込み
+              </button>
+              <button
+                type="button"
+                onClick={onResetState}
+                className="flex items-center justify-center gap-2 rounded-lg bg-gray-200 px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-300"
+              >
+                <RotateCcw className="h-4 w-4" /> 初期化
+              </button>
             </div>
-
-            <div>
-              <div className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">
-                盤面配置のみ
-              </div>
-              <div className="mb-2 text-xs text-gray-500">
-                マスの `x / y` 座標、分岐、テキスト、色、効果だけを個別に管理したいときはこちらを使います。
-              </div>
-              <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-                <button
-                  type="button"
-                  onClick={onExportBoard}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-bold text-white hover:bg-emerald-700"
-                >
-                  <Download className="h-4 w-4" /> 盤面を書き出し
-                </button>
-                <button
-                  type="button"
-                  onClick={() => boardImportInputRef.current?.click()}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-amber-500 px-3 py-2 text-sm font-bold text-white hover:bg-amber-600"
-                >
-                  <Upload className="h-4 w-4" /> 盤面を読み込み
-                </button>
-              </div>
-            </div>
-
-            <input
-              ref={boardImportInputRef}
-              type="file"
-              accept="application/json"
-              className="hidden"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) {
-                  onImportBoard(file);
-                }
-                event.target.value = "";
-              }}
-            />
             <input
               ref={importInputRef}
               type="file"

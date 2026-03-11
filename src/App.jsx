@@ -14,7 +14,6 @@ import {
   createPlayer,
   findBlockingPurpleSpace,
   JOB_OPTIONS,
-  normalizeBoardFile,
   normalizeGameState,
   PLAYER_CONFIG,
 } from "./lib/gameState.js";
@@ -24,7 +23,6 @@ import {
 } from "./lib/boardBranches.js";
 import {
   clearGameState,
-  downloadBoardState,
   downloadGameState,
   loadGameState,
   saveGameState,
@@ -191,10 +189,6 @@ export default function App() {
     downloadGameState({ board, branches, players, currentPlayerIndex, isEditing });
   };
 
-  const handleExportBoard = () => {
-    downloadBoardState(board, branches);
-  };
-
   const handleImportState = async (file) => {
     try {
       const text = await file.text();
@@ -210,27 +204,6 @@ export default function App() {
       window.alert("JSON の読み込みが完了しました。");
     } catch {
       window.alert("JSON の読み込みに失敗しました。ファイル形式を確認してください。");
-    }
-  };
-
-  const handleImportBoard = async (file) => {
-    try {
-      const text = await file.text();
-      const nextBoardState = normalizeBoardFile(JSON.parse(text));
-      setBoard(nextBoardState.board);
-      setBranches(nextBoardState.branches);
-      setPlayers((previous) =>
-        previous.map((player) => ({
-          ...player,
-          position: Math.min(player.position, nextBoardState.board.length - 1),
-        })),
-      );
-      setEditingSpaceId(null);
-      setMapEditTool("space");
-      setBranchStartId(null);
-      window.alert("盤面 JSON の読み込みが完了しました。");
-    } catch {
-      window.alert("盤面 JSON の読み込みに失敗しました。ファイル形式を確認してください。");
     }
   };
 
@@ -313,8 +286,6 @@ export default function App() {
         onChangePlayerCount={handleChangePlayerCount}
         onExportState={handleExportState}
         onImportState={handleImportState}
-        onExportBoard={handleExportBoard}
-        onImportBoard={handleImportBoard}
         onResetState={handleResetState}
       />
 

@@ -147,13 +147,6 @@ export const normalizeBoard = (board) => {
   return board.map((space, index) => normalizeSpace(space, index, layout));
 };
 
-export const normalizeBoardFile = (rawBoard) => {
-  const board = normalizeBoard(Array.isArray(rawBoard) ? rawBoard : rawBoard?.board);
-  const branches = normalizeBranches(rawBoard?.branches, board.length);
-
-  return { board, branches };
-};
-
 export const normalizePlayers = (players) => {
   if (!Array.isArray(players) || players.length === 0) {
     return createInitialPlayers();
@@ -225,13 +218,3 @@ export const formatCurrency = (amount) => `${numberFormatter.format(amount)}円`
 
 export const serializeGameState = (state) =>
   JSON.stringify(normalizeGameState(state), null, 2);
-
-export const serializeBoardState = (board, branches) =>
-  JSON.stringify(
-    {
-      board: normalizeBoard(board),
-      branches: normalizeBranches(branches, board.length),
-    },
-    null,
-    2,
-  );

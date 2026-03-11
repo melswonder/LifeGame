@@ -13,13 +13,16 @@ import {
   clampBoardPoint,
   createInitialGameState,
   createPlayer,
+  DEFAULT_JOB_OPTIONS,
   findBlockingPurpleSpace,
-  JOB_OPTIONS,
+  normalizeBoard,
+  normalizeJobOptions,
   normalizeGameState,
   PLAYER_CONFIG,
 } from "./lib/gameState.js";
 import {
   createBranchBetweenSpaces,
+  normalizeBranches,
   removeBranchById,
 } from "./lib/boardBranches.js";
 import {
@@ -30,6 +33,8 @@ import {
 } from "./lib/gameStorage.js";
 
 export default function App() {
+  const MIN_BOARD_SPACES = 20;
+  const MAX_BOARD_SPACES = 140;
   const initialState = useMemo(
     () => loadGameState() ?? createInitialGameState(),
     [],
@@ -38,6 +43,9 @@ export default function App() {
   const [branches, setBranches] = useState(initialState.branches ?? []);
   const [backgroundImageUrl, setBackgroundImageUrl] = useState(
     initialState.backgroundImageUrl ?? null,
+  );
+  const [jobOptions, setJobOptions] = useState(
+    normalizeJobOptions(initialState.jobOptions ?? DEFAULT_JOB_OPTIONS),
   );
   const [players, setPlayers] = useState(initialState.players);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(initialState.currentPlayerIndex);
@@ -53,11 +61,12 @@ export default function App() {
       board,
       branches,
       backgroundImageUrl,
+      jobOptions,
       players,
       currentPlayerIndex,
       isEditing,
     });
-  }, [board, branches, backgroundImageUrl, players, currentPlayerIndex, isEditing]);
+  }, [board, branches, backgroundImageUrl, jobOptions, players, currentPlayerIndex, isEditing]);
 
   useEffect(() => {
     if (!isEditing) {
@@ -169,11 +178,31 @@ export default function App() {
     setPlayers((previous) => previous.map((player) => (player.id === id ? { ...player, ...updates } : player)));
   };
 
+  const handleChangeBoardCount = (nextCount) => {
+    const boundedCount = Math.max(MIN_BOARD_SPACES, Math.min(MAX_BOARD_SPACES, nextCount));
+    const nextBoard = normalizeBoard(
+      Array.from({ length: boundedCount }, (_, index) => board[index] ?? { id: index }),
+    );
+    const nextBranches = normalizeBranches(branches, boundedCount);
+
+    setBoard(nextBoard);
+    setBranches(nextBranches);
+    setPlayers((previous) =>
+      previous.map((player) => ({
+        ...player,
+        position: Math.min(player.position, boundedCount - 1),
+      })),
+    );
+    setEditingSpaceId((previous) => (previous !== null && previous >= boundedCount ? null : previous));
+    setPreviewSpaceId((previous) => (previous !== null && previous >= boundedCount ? null : previous));
+    setBranchStartId((previous) => (previous !== null && previous >= boundedCount ? null : previous));
+  };
+
   const handleChangePlayerCount = (newCount) => {
     setPlayers((previous) => {
       if (newCount > previous.length) {
         const addedPlayers = Array.from({ length: newCount - previous.length }).map((_, index) =>
-          createPlayer(previous.length + index),
+          createPlayer(previous.length + index, {}, jobOptions),
         );
         return [...previous, ...addedPlayers];
       }
@@ -219,6 +248,7 @@ export default function App() {
       board,
       branches,
       backgroundImageUrl,
+      jobOptions,
       players,
       currentPlayerIndex,
       isEditing,
@@ -232,6 +262,7 @@ export default function App() {
       setBoard(nextState.board);
       setBranches(nextState.branches);
       setBackgroundImageUrl(nextState.backgroundImageUrl);
+      setJobOptions(nextState.jobOptions);
       setPlayers(nextState.players);
       setCurrentPlayerIndex(nextState.currentPlayerIndex);
       setIsEditing(nextState.isEditing);
@@ -251,6 +282,7 @@ export default function App() {
     setBoard(nextState.board);
     setBranches(nextState.branches);
     setBackgroundImageUrl(nextState.backgroundImageUrl);
+    setJobOptions(nextState.jobOptions);
     setPlayers(nextState.players);
     setCurrentPlayerIndex(nextState.currentPlayerIndex);
     setIsEditing(nextState.isEditing);
@@ -321,14 +353,91 @@ export default function App() {
         isEditing={isEditing}
         setIsEditing={setIsEditing}
         players={players}
-        jobOptions={JOB_OPTIONS}
+        jobOptions={jobOptions}
         minPlayers={PLAYER_CONFIG.minPlayerCount}
         maxPlayers={PLAYER_CONFIG.maxPlayerCount}
+        boardCount={board.length}
+        minBoardSpaces={MIN_BOARD_SPACES}
+        maxBoardSpaces={MAX_BOARD_SPACES}
         onUpdatePlayer={handleUpdatePlayer}
         onChangePlayerCount={handleChangePlayerCount}
+        onChangeBoardCount={handleChangeBoardCount}
         backgroundImageUrl={backgroundImageUrl}
         onUpdateBackgroundImage={setBackgroundImageUrl}
         onClearBackgroundImage={() => setBackgroundImageUrl(null)}
+        onAddJobOption={() => {
+          setJobOptions((previous) => {
+            const nextIndex = previous.length + 1;
+            let name = `新しい職業 ${nextIndex}`;
+            let suffix = nextIndex;
+            while (previous.some((job) => job.name === name)) {
+              suffix += 1;
+              name = `新しい職業 ${suffix}`;
+            }
+            return [...previous, { name, salary: 10000 }];
+          });
+        }}
+        onUpdateJobOption={(index, updates) => {
+          const currentJob = jobOptions[index];
+          if (!currentJob) {
+            return;
+          }
+
+          const nextName =
+            typeof updates.name === "string" && updates.name.trim()
+              ? updates.name.trim()
+              : currentJob.name;
+
+          if (
+            nextName !== currentJob.name &&
+            jobOptions.some((job, jobIndex) => jobIndex !== index && job.name === nextName)
+          ) {
+            window.alert("同じ名前の職種は作れません。");
+            return;
+          }
+
+          const nextSalary =
+            typeof updates.salary === "number" && Number.isFinite(updates.salary)
+              ? Math.max(0, updates.salary)
+              : currentJob.salary;
+
+          const nextJob = { name: nextName, salary: nextSalary };
+          const nextJobOptions = jobOptions.map((job, jobIndex) =>
+            jobIndex === index ? nextJob : job,
+          );
+
+          setJobOptions(nextJobOptions);
+          setPlayers((previous) =>
+            previous.map((player) =>
+              player.job === currentJob.name
+                ? { ...player, job: nextJob.name, salary: nextJob.salary }
+                : player,
+            ),
+          );
+        }}
+        onRemoveJobOption={(index) => {
+          if (jobOptions.length <= 1) {
+            window.alert("職種は最低1つ必要です。");
+            return;
+          }
+
+          const removedJob = jobOptions[index];
+          if (!removedJob) {
+            return;
+          }
+
+          const nextJobOptions = jobOptions.filter((_, jobIndex) => jobIndex !== index);
+          const fallbackJob = nextJobOptions[0];
+
+          setJobOptions(nextJobOptions);
+          setPlayers((previous) =>
+            previous.map((player) =>
+              player.job === removedJob.name
+                ? { ...player, job: fallbackJob.name, salary: fallbackJob.salary }
+                : player,
+            ),
+          );
+        }}
         onExportState={handleExportState}
         onImportState={handleImportState}
         onResetState={handleResetState}

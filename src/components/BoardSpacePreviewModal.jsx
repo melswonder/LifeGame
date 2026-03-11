@@ -1,13 +1,4 @@
-import {
-  Briefcase,
-  CircleDollarSign,
-  CopyMinus,
-  Route,
-  Sparkles,
-  Users,
-  X,
-} from "lucide-react";
-import { formatCurrency } from "../lib/gameState.js";
+import { Sparkles, X } from "lucide-react";
 
 const TYPE_LABELS = {
   start: "スタート",
@@ -28,90 +19,11 @@ const COLOR_STYLES = {
   white: "border-gray-300 bg-white text-gray-800",
 };
 
-const buildEffects = (space) => {
-  const effects = [];
-
-  if (space.money > 0) {
-    effects.push({
-      key: "money-plus",
-      icon: CircleDollarSign,
-      tone: "bg-emerald-50 border-emerald-200 text-emerald-900",
-      label: `所持金 +${formatCurrency(space.money)}`,
-    });
-  }
-
-  if (space.money < 0) {
-    effects.push({
-      key: "money-minus",
-      icon: CircleDollarSign,
-      tone: "bg-rose-50 border-rose-200 text-rose-900",
-      label: `所持金 ${formatCurrency(space.money)}`,
-    });
-  }
-
-  if (space.addCarPeople > 0) {
-    effects.push({
-      key: "car-plus",
-      icon: Users,
-      tone: "bg-sky-50 border-sky-200 text-sky-900",
-      label: `同乗者 +${space.addCarPeople}`,
-    });
-  }
-
-  if (space.addCarPeople < 0) {
-    effects.push({
-      key: "car-minus",
-      icon: Users,
-      tone: "bg-sky-50 border-sky-200 text-sky-900",
-      label: `同乗者 ${space.addCarPeople}`,
-    });
-  }
-
-  if (space.addDebt > 0) {
-    effects.push({
-      key: "debt-plus",
-      icon: CopyMinus,
-      tone: "bg-amber-50 border-amber-200 text-amber-900",
-      label: `借金 +${space.addDebt}`,
-    });
-  }
-
-  if (space.addDebt < 0) {
-    effects.push({
-      key: "debt-minus",
-      icon: CopyMinus,
-      tone: "bg-amber-50 border-amber-200 text-amber-900",
-      label: `借金 ${space.addDebt}`,
-    });
-  }
-
-  if (space.type === "payday") {
-    effects.push({
-      key: "payday",
-      icon: Briefcase,
-      tone: "bg-blue-50 border-blue-200 text-blue-900",
-      label: "到着時に給料を受け取る",
-    });
-  }
-
-  if (space.color === "purple") {
-    effects.push({
-      key: "purple-stop",
-      icon: Route,
-      tone: "bg-violet-50 border-violet-200 text-violet-900",
-      label: "移動中でもこのマスで止まる",
-    });
-  }
-
-  return effects;
-};
-
 export default function BoardSpacePreviewModal({ isOpen, space, onClose }) {
   if (!isOpen || !space) {
     return null;
   }
 
-  const effects = buildEffects(space);
   const colorStyle = COLOR_STYLES[space.color] ?? COLOR_STYLES.blue;
 
   return (
@@ -158,37 +70,8 @@ export default function BoardSpacePreviewModal({ isOpen, space, onClose }) {
 
         <div className="space-y-5 p-6">
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-            <div className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">
-              テキスト
-            </div>
+            <div className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">内容</div>
             <div className="text-base font-bold leading-relaxed text-gray-800">{space.text}</div>
-          </div>
-
-          <div className="rounded-2xl border border-gray-200 bg-white p-4">
-            <div className="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">
-              エフェクト
-            </div>
-            {effects.length > 0 ? (
-              <div className="grid grid-cols-1 gap-2">
-                {effects.map((effect) => {
-                  const Icon = effect.icon;
-
-                  return (
-                    <div
-                      key={effect.key}
-                      className={`flex items-center gap-3 rounded-xl border px-3 py-3 text-sm font-bold ${effect.tone}`}
-                    >
-                      <Icon className="h-5 w-5 shrink-0" />
-                      <span>{effect.label}</span>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div className="rounded-xl border border-dashed border-gray-200 bg-gray-50 px-4 py-6 text-center text-sm font-bold text-gray-500">
-                特別なエフェクトはありません
-              </div>
-            )}
           </div>
         </div>
       </div>

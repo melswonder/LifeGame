@@ -4,7 +4,8 @@ import playerConfig from "../data/playerConfig.json";
 import { normalizeBranches } from "./boardBranches.js";
 import { BOARD_CANVAS, BOARD_NODE_SIZE, getBoardLayout } from "./boardMap.js";
 
-export const JOB_OPTIONS = jobOptions;
+export const DEFAULT_JOB_OPTIONS = jobOptions;
+export const JOB_OPTIONS = DEFAULT_JOB_OPTIONS;
 export const PLAYER_CONFIG = playerConfig;
 export const BOARD_COLOR_OPTIONS = [
   { value: "red", label: "赤" },
@@ -29,11 +30,36 @@ const getNumber = (value, fallback) =>
 const getText = (value, fallback) =>
   typeof value === "string" && value.trim() ? value : fallback;
 
-const getJobByName = (name) =>
-  JOB_OPTIONS.find((job) => job.name === name) ?? JOB_OPTIONS[0];
+const getJobByName = (name, options = JOB_OPTIONS) =>
+  options.find((job) => job.name === name) ?? options[0];
 
 const normalizeLegacyCurrencyText = (text) =>
   text.replace(/([+-]?)\$([\d,]+)/g, (_, sign, amount) => `${sign}${amount}円`);
+
+export const normalizeJobOptions = (rawJobOptions) => {
+  if (!Array.isArray(rawJobOptions) || rawJobOptions.length === 0) {
+    return cloneJson(DEFAULT_JOB_OPTIONS);
+  }
+
+  const usedNames = new Set();
+  const normalized = rawJobOptions
+    .map((job, index) => {
+      const fallbackName = DEFAULT_JOB_OPTIONS[index]?.name ?? `職業 ${index + 1}`;
+      const name = getText(job?.name, fallbackName);
+      if (usedNames.has(name)) {
+        return null;
+      }
+      usedNames.add(name);
+
+      return {
+        name,
+        salary: Math.max(0, getNumber(job?.salary, 0)),
+      };
+    })
+    .filter(Boolean);
+
+  return normalized.length > 0 ? normalized : cloneJson(DEFAULT_JOB_OPTIONS);
+};
 
 const getBoardColor = (value, type = "normal") => {
   if (BOARD_COLOR_OPTIONS.some((option) => option.value === value)) {
@@ -84,11 +110,12 @@ const normalizeSpace = (space, index, layout) => {
   };
 };
 
-export const createPlayer = (index, overrides = {}) => {
+export const createPlayer = (index, overrides = {}, availableJobs = JOB_OPTIONS) => {
   const defaultJob = getJobByName(
     PLAYER_CONFIG.startingJobs[index % PLAYER_CONFIG.startingJobs.length],
+    availableJobs,
   );
-  const selectedJob = getJobByName(overrides.job ?? defaultJob.name);
+  const selectedJob = getJobByName(overrides.job ?? defaultJob.name, availableJobs);
 
   return {
     id: getNumber(overrides.id, index + 1),
@@ -121,9 +148,12 @@ export const createPlayer = (index, overrides = {}) => {
   };
 };
 
-export const createInitialPlayers = (count = PLAYER_CONFIG.initialPlayerCount) =>
+export const createInitialPlayers = (
+  count = PLAYER_CONFIG.initialPlayerCount,
+  availableJobs = JOB_OPTIONS,
+) =>
   Array.from({ length: clamp(count, PLAYER_CONFIG.minPlayerCount, PLAYER_CONFIG.maxPlayerCount) }).map(
-    (_, index) => createPlayer(index),
+    (_, index) => createPlayer(index, {}, availableJobs),
   );
 
 export const createInitialBoard = () => {
@@ -131,14 +161,19 @@ export const createInitialBoard = () => {
   return cloneJson(boardSpacesData).map((space, index) => normalizeSpace(space, index, layout));
 };
 
-export const createInitialGameState = () => ({
-  board: createInitialBoard(),
-  branches: [],
-  backgroundImageUrl: null,
-  players: createInitialPlayers(),
-  currentPlayerIndex: 0,
-  isEditing: false,
-});
+export const createInitialGameState = () => {
+  const normalizedJobOptions = normalizeJobOptions(JOB_OPTIONS);
+
+  return {
+    board: createInitialBoard(),
+    branches: [],
+    backgroundImageUrl: null,
+    jobOptions: normalizedJobOptions,
+    players: createInitialPlayers(undefined, normalizedJobOptions),
+    currentPlayerIndex: 0,
+    isEditing: false,
+  };
+};
 
 export const normalizeBoard = (board) => {
   if (!Array.isArray(board) || board.length === 0) {
@@ -149,9 +184,9 @@ export const normalizeBoard = (board) => {
   return board.map((space, index) => normalizeSpace(space, index, layout));
 };
 
-export const normalizePlayers = (players) => {
+export const normalizePlayers = (players, availableJobs = JOB_OPTIONS) => {
   if (!Array.isArray(players) || players.length === 0) {
-    return createInitialPlayers();
+    return createInitialPlayers(undefined, availableJobs);
   }
 
   const count = clamp(
@@ -160,14 +195,17 @@ export const normalizePlayers = (players) => {
     PLAYER_CONFIG.maxPlayerCount,
   );
 
-  return players.slice(0, count).map((player, index) => createPlayer(index, player));
+  return players
+    .slice(0, count)
+    .map((player, index) => createPlayer(index, player, availableJobs));
 };
 
 export const normalizeGameState = (rawState) => {
   const defaultState = createInitialGameState();
   const board = normalizeBoard(rawState?.board);
   const branches = normalizeBranches(rawState?.branches, board.length);
-  const players = normalizePlayers(rawState?.players).map((player) => ({
+  const jobOptions = normalizeJobOptions(rawState?.jobOptions ?? defaultState.jobOptions);
+  const players = normalizePlayers(rawState?.players, jobOptions).map((player) => ({
     ...player,
     position: clamp(player.position, 0, board.length - 1),
   }));
@@ -179,6 +217,7 @@ export const normalizeGameState = (rawState) => {
       typeof rawState?.backgroundImageUrl === "string" && rawState.backgroundImageUrl.trim()
         ? rawState.backgroundImageUrl
         : defaultState.backgroundImageUrl,
+    jobOptions,
     players,
     currentPlayerIndex: clamp(
       getNumber(rawState?.currentPlayerIndex, defaultState.currentPlayerIndex),

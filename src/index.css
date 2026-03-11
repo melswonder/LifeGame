@@ -1,1 +1,25 @@
 @import "tailwindcss";
+
+@keyframes board-space-preview-in {
+  0% {
+    opacity: 0;
+    transform: perspective(1200px) rotateY(-360deg) scale(0.72) translateY(36px);
+  }
+
+  68% {
+    opacity: 1;
+    transform: perspective(1200px) rotateY(14deg) scale(1.02) translateY(-4px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: perspective(1200px) rotateY(0deg) scale(1) translateY(0);
+  }
+}
+
+.board-space-preview-in {
+  animation: board-space-preview-in 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  backface-visibility: hidden;
+  transform-origin: center;
+  will-change: transform, opacity;
+}

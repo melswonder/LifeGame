@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, Settings } from "lucide-react";
 import BoardArea from "./components/BoardArea.jsx";
 import BoardSpaceModal from "./components/BoardSpaceModal.jsx";
+import BoardSpacePreviewModal from "./components/BoardSpacePreviewModal.jsx";
 import CircularRoulette from "./components/CircularRoulette.jsx";
 import PlayerStatus from "./components/PlayerStatus.jsx";
 import PlayerTabs from "./components/PlayerTabs.jsx";
@@ -43,6 +44,7 @@ export default function App() {
   const [isEditing, setIsEditing] = useState(initialState.isEditing);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingSpaceId, setEditingSpaceId] = useState(null);
+  const [previewSpaceId, setPreviewSpaceId] = useState(null);
   const [mapEditTool, setMapEditTool] = useState("space");
   const [branchStartId, setBranchStartId] = useState(null);
 
@@ -63,6 +65,10 @@ export default function App() {
       setMapEditTool("space");
       setBranchStartId(null);
     }
+
+    if (isEditing) {
+      setPreviewSpaceId(null);
+    }
   }, [isEditing]);
 
   useEffect(() => {
@@ -73,6 +79,7 @@ export default function App() {
 
   const currentPlayer = players[currentPlayerIndex] ?? players[0];
   const editingSpace = board.find((space) => space.id === editingSpaceId) ?? null;
+  const previewSpace = board.find((space) => space.id === previewSpaceId) ?? null;
 
   const handleUpdateSpace = (id, newSpaceData) => {
     setBoard((previous) => previous.map((space) => (space.id === id ? newSpaceData : space)));
@@ -87,6 +94,18 @@ export default function App() {
 
   const handleCloseSpaceEditor = () => {
     setEditingSpaceId(null);
+  };
+
+  const handleOpenSpacePreview = (space) => {
+    if (isEditing) {
+      return;
+    }
+
+    setPreviewSpaceId(space.id);
+  };
+
+  const handleCloseSpacePreview = () => {
+    setPreviewSpaceId(null);
   };
 
   const handleMoveSpace = (id, updates) => {
@@ -217,6 +236,7 @@ export default function App() {
       setCurrentPlayerIndex(nextState.currentPlayerIndex);
       setIsEditing(nextState.isEditing);
       setEditingSpaceId(null);
+      setPreviewSpaceId(null);
       setMapEditTool("space");
       setBranchStartId(null);
       window.alert("JSON の読み込みが完了しました。");
@@ -235,6 +255,7 @@ export default function App() {
     setCurrentPlayerIndex(nextState.currentPlayerIndex);
     setIsEditing(nextState.isEditing);
     setEditingSpaceId(null);
+    setPreviewSpaceId(null);
     setMapEditTool("space");
     setBranchStartId(null);
   };
@@ -251,6 +272,7 @@ export default function App() {
           mapEditTool={mapEditTool}
           branchStartId={branchStartId}
           onEditSpace={handleOpenSpaceEditor}
+          onPreviewSpace={handleOpenSpacePreview}
           onMoveSpace={handleMoveSpace}
           onChangeEditTool={setMapEditTool}
           onSelectBranchSpace={handleSelectBranchSpace}
@@ -321,6 +343,12 @@ export default function App() {
           handleUpdateSpace(nextSpace.id, nextSpace);
           handleCloseSpaceEditor();
         }}
+      />
+
+      <BoardSpacePreviewModal
+        isOpen={previewSpace !== null}
+        space={previewSpace}
+        onClose={handleCloseSpacePreview}
       />
     </div>
   );

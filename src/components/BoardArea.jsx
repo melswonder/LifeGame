@@ -58,6 +58,7 @@ export default function BoardArea({
   mapEditTool,
   branchStartId,
   onEditSpace,
+  onPreviewSpace,
   onMoveSpace,
   onChangeEditTool,
   onSelectBranchSpace,
@@ -550,7 +551,12 @@ export default function BoardArea({
                     height: BOARD_NODE_SIZE,
                   }}
                   onClick={() => {
-                    if (!isEditing || mapEditTool !== "branch") {
+                    if (!isEditing) {
+                      onPreviewSpace(space);
+                      return;
+                    }
+
+                    if (mapEditTool !== "branch") {
                       return;
                     }
 

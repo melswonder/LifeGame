@@ -1,6 +1,7 @@
 import boardSpacesData from "../data/boardSpaces.json";
 import jobOptions from "../data/jobs.json";
 import playerConfig from "../data/playerConfig.json";
+import { BOARD_CANVAS, BOARD_NODE_SIZE, getBoardLayout } from "./boardMap.js";
 
 export const JOB_OPTIONS = jobOptions;
 export const PLAYER_CONFIG = playerConfig;
@@ -53,18 +54,34 @@ const getBoardColor = (value, type = "normal") => {
   return "blue";
 };
 
-const normalizeSpace = (space, index) => ({
-  id: index,
-  type: getText(space?.type, "normal"),
-  text:
-    typeof space?.text === "string"
-      ? normalizeLegacyCurrencyText(space.text)
-      : "何気ない日常。",
-  money: getNumber(space?.money, 0),
-  addCarPeople: getNumber(space?.addCarPeople, 0),
-  addDebt: getNumber(space?.addDebt, 0),
-  color: getBoardColor(space?.color, space?.type),
-});
+export const clampBoardPoint = (x, y) => {
+  const edgePadding = BOARD_NODE_SIZE / 2 + 24;
+
+  return {
+    x: clamp(getNumber(x, edgePadding), edgePadding, BOARD_CANVAS.width - edgePadding),
+    y: clamp(getNumber(y, edgePadding), edgePadding, BOARD_CANVAS.height - edgePadding),
+  };
+};
+
+const normalizeSpace = (space, index, layout) => {
+  const defaultPosition = layout[index];
+  const position = clampBoardPoint(space?.x ?? defaultPosition.x, space?.y ?? defaultPosition.y);
+
+  return {
+    id: index,
+    type: getText(space?.type, "normal"),
+    text:
+      typeof space?.text === "string"
+        ? normalizeLegacyCurrencyText(space.text)
+        : "何気ない日常。",
+    money: getNumber(space?.money, 0),
+    addCarPeople: getNumber(space?.addCarPeople, 0),
+    addDebt: getNumber(space?.addDebt, 0),
+    color: getBoardColor(space?.color, space?.type),
+    x: position.x,
+    y: position.y,
+  };
+};
 
 export const createPlayer = (index, overrides = {}) => {
   const defaultJob = getJobByName(
@@ -107,7 +124,10 @@ export const createInitialPlayers = (count = PLAYER_CONFIG.initialPlayerCount) =
     (_, index) => createPlayer(index),
   );
 
-export const createInitialBoard = () => cloneJson(boardSpacesData).map(normalizeSpace);
+export const createInitialBoard = () => {
+  const layout = getBoardLayout(boardSpacesData.length);
+  return cloneJson(boardSpacesData).map((space, index) => normalizeSpace(space, index, layout));
+};
 
 export const createInitialGameState = () => ({
   board: createInitialBoard(),
@@ -121,8 +141,12 @@ export const normalizeBoard = (board) => {
     return createInitialBoard();
   }
 
-  return board.map(normalizeSpace);
+  const layout = getBoardLayout(board.length);
+  return board.map((space, index) => normalizeSpace(space, index, layout));
 };
+
+export const normalizeBoardFile = (rawBoard) =>
+  normalizeBoard(Array.isArray(rawBoard) ? rawBoard : rawBoard?.board);
 
 export const normalizePlayers = (players) => {
   if (!Array.isArray(players) || players.length === 0) {
@@ -193,3 +217,6 @@ export const formatCurrency = (amount) => `${numberFormatter.format(amount)}円`
 
 export const serializeGameState = (state) =>
   JSON.stringify(normalizeGameState(state), null, 2);
+
+export const serializeBoardState = (board) =>
+  JSON.stringify({ board: normalizeBoard(board) }, null, 2);

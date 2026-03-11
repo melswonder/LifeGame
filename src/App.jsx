@@ -9,15 +9,18 @@ import SettingsModal from "./components/SettingsModal.jsx";
 import {
   applySpaceEffects,
   BOARD_COLOR_OPTIONS,
+  clampBoardPoint,
   createInitialGameState,
   createPlayer,
   findBlockingPurpleSpace,
   JOB_OPTIONS,
+  normalizeBoardFile,
   normalizeGameState,
   PLAYER_CONFIG,
 } from "./lib/gameState.js";
 import {
   clearGameState,
+  downloadBoardState,
   downloadGameState,
   loadGameState,
   saveGameState,
@@ -58,6 +61,19 @@ export default function App() {
 
   const handleCloseSpaceEditor = () => {
     setEditingSpaceId(null);
+  };
+
+  const handleMoveSpace = (id, updates) => {
+    setBoard((previous) =>
+      previous.map((space) => {
+        if (space.id !== id) {
+          return space;
+        }
+
+        const position = clampBoardPoint(updates?.x ?? space.x, updates?.y ?? space.y);
+        return { ...space, ...updates, ...position };
+      }),
+    );
   };
 
   const handleUpdatePlayer = (id, updates) => {
@@ -113,6 +129,10 @@ export default function App() {
     downloadGameState({ board, players, currentPlayerIndex, isEditing });
   };
 
+  const handleExportBoard = () => {
+    downloadBoardState(board);
+  };
+
   const handleImportState = async (file) => {
     try {
       const text = await file.text();
@@ -121,9 +141,28 @@ export default function App() {
       setPlayers(nextState.players);
       setCurrentPlayerIndex(nextState.currentPlayerIndex);
       setIsEditing(nextState.isEditing);
+      setEditingSpaceId(null);
       window.alert("JSON の読み込みが完了しました。");
     } catch {
       window.alert("JSON の読み込みに失敗しました。ファイル形式を確認してください。");
+    }
+  };
+
+  const handleImportBoard = async (file) => {
+    try {
+      const text = await file.text();
+      const nextBoard = normalizeBoardFile(JSON.parse(text));
+      setBoard(nextBoard);
+      setPlayers((previous) =>
+        previous.map((player) => ({
+          ...player,
+          position: Math.min(player.position, nextBoard.length - 1),
+        })),
+      );
+      setEditingSpaceId(null);
+      window.alert("盤面 JSON の読み込みが完了しました。");
+    } catch {
+      window.alert("盤面 JSON の読み込みに失敗しました。ファイル形式を確認してください。");
     }
   };
 
@@ -134,6 +173,7 @@ export default function App() {
     setPlayers(nextState.players);
     setCurrentPlayerIndex(nextState.currentPlayerIndex);
     setIsEditing(nextState.isEditing);
+    setEditingSpaceId(null);
   };
 
   return (
@@ -144,6 +184,7 @@ export default function App() {
           players={players}
           isEditing={isEditing}
           onEditSpace={handleOpenSpaceEditor}
+          onMoveSpace={handleMoveSpace}
         />
       </div>
 
@@ -195,6 +236,8 @@ export default function App() {
         onChangePlayerCount={handleChangePlayerCount}
         onExportState={handleExportState}
         onImportState={handleImportState}
+        onExportBoard={handleExportBoard}
+        onImportBoard={handleImportBoard}
         onResetState={handleResetState}
       />
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Palette, Save, X } from "lucide-react";
+import { clampBoardPoint } from "../lib/gameState.js";
 
 const COLOR_BUTTON_STYLES = {
   red: "bg-red-500 border-red-700 text-white",
@@ -19,6 +20,8 @@ export default function BoardSpaceModal({
 }) {
   const [text, setText] = useState("");
   const [color, setColor] = useState("blue");
+  const [x, setX] = useState(0);
+  const [y, setY] = useState(0);
 
   useEffect(() => {
     if (!space) {
@@ -27,6 +30,8 @@ export default function BoardSpaceModal({
 
     setText(space.text ?? "");
     setColor(space.color ?? "blue");
+    setX(Math.round(space.x ?? 0));
+    setY(Math.round(space.y ?? 0));
   }, [space]);
 
   if (!isOpen || !space) {
@@ -78,6 +83,33 @@ export default function BoardSpaceModal({
             </div>
           </div>
 
+          <div>
+            <div className="mb-2 text-sm font-bold text-gray-800">マップ座標</div>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                <div className="mb-1 text-xs font-bold text-gray-500">X 座標</div>
+                <input
+                  type="number"
+                  value={x}
+                  onChange={(event) => setX(Number(event.target.value))}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </label>
+              <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
+                <div className="mb-1 text-xs font-bold text-gray-500">Y 座標</div>
+                <input
+                  type="number"
+                  value={y}
+                  onChange={(event) => setY(Number(event.target.value))}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </label>
+            </div>
+            <div className="mt-2 text-xs text-gray-500">
+              編集モードではドラッグ移動もできます。JSON の盤面書き出しにもこの座標が保存されます。
+            </div>
+          </div>
+
           <div className="flex justify-end gap-2 border-t border-gray-100 pt-4">
             <button
               type="button"
@@ -88,7 +120,10 @@ export default function BoardSpaceModal({
             </button>
             <button
               type="button"
-              onClick={() => onSave({ ...space, text, color })}
+              onClick={() => {
+                const position = clampBoardPoint(x, y);
+                onSave({ ...space, text, color, ...position });
+              }}
               className="flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700"
             >
               <Save className="h-4 w-4" /> 保存

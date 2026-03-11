@@ -1,4 +1,8 @@
-import { normalizeGameState, serializeGameState } from "./gameState";
+import {
+  normalizeGameState,
+  serializeBoardState,
+  serializeGameState,
+} from "./gameState";
 
 export const GAME_STORAGE_KEY = "life-game-state-v1";
 
@@ -35,16 +39,24 @@ export const clearGameState = () => {
   window.localStorage.removeItem(GAME_STORAGE_KEY);
 };
 
-export const downloadGameState = (state) => {
+const downloadJson = (filename, content) => {
   if (typeof window === "undefined") {
     return;
   }
 
-  const blob = new Blob([serializeGameState(state)], { type: "application/json" });
+  const blob = new Blob([content], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;
-  link.download = "life-game-state.json";
+  link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
+};
+
+export const downloadGameState = (state) => {
+  downloadJson("life-game-state.json", serializeGameState(state));
+};
+
+export const downloadBoardState = (board) => {
+  downloadJson("life-game-board.json", serializeBoardState(board));
 };

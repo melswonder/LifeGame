@@ -44,19 +44,30 @@ const SPACE_COLOR_STYLES = {
 const MIN_ZOOM = 0.2;
 const MAX_ZOOM = 1.1;
 const DEFAULT_ZOOM = 0.34;
+const SPACE_EDGE_PADDING = BOARD_NODE_SIZE / 2 + 24;
 
 const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 
-export default function BoardArea({ board, players, isEditing, onEditSpace }) {
+export default function BoardArea({
+  board,
+  players,
+  isEditing,
+  onEditSpace,
+  onMoveSpace,
+}) {
   const viewportRef = useRef(null);
   const dragStateRef = useRef(null);
+  const spaceDragRef = useRef(null);
   const centeredRef = useRef(false);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [isDragging, setIsDragging] = useState(false);
 
   const mapSpaces = useMemo(() => {
     const layout = getBoardLayout(board.length);
-    return board.map((space, index) => ({ ...space, ...layout[index] }));
+    return board.map((space, index) => ({
+      ...layout[index],
+      ...space,
+    }));
   }, [board]);
 
   const mainRoutePath = useMemo(
@@ -232,7 +243,7 @@ export default function BoardArea({ board, players, isEditing, onEditSpace }) {
 
         <div className="pointer-events-auto flex items-center gap-2 rounded-2xl border border-white/70 bg-white/85 px-4 py-2 text-xs font-bold text-gray-700 shadow-lg backdrop-blur">
           <LocateFixed className="h-4 w-4 text-emerald-600" />
-          ドラッグで移動 / ボタンで拡大縮小
+          {isEditing ? "マスをドラッグで移動 / クリックで編集" : "ドラッグで移動 / ボタンで拡大縮小"}
           {isEditing && (
             <span className="animate-pulse rounded-full bg-blue-500 px-3 py-1 text-white">
               編集中
@@ -453,12 +464,115 @@ export default function BoardArea({ board, players, isEditing, onEditSpace }) {
                     width: BOARD_NODE_SIZE,
                     height: BOARD_NODE_SIZE,
                   }}
-                  onClick={() => {
-                    if (!isEditing) {
+                  onPointerDown={(event) => {
+                    if (!isEditing || event.button !== 0) {
                       return;
                     }
 
-                    onEditSpace(space);
+                    event.stopPropagation();
+
+                    const viewport = viewportRef.current;
+                    if (!viewport) {
+                      return;
+                    }
+
+                    const rect = viewport.getBoundingClientRect();
+                    const pointerX =
+                      (viewport.scrollLeft + event.clientX - rect.left) / zoom;
+                    const pointerY =
+                      (viewport.scrollTop + event.clientY - rect.top) / zoom;
+
+                    spaceDragRef.current = {
+                      id: space.id,
+                      pointerId: event.pointerId,
+                      offsetX: pointerX - space.x,
+                      offsetY: pointerY - space.y,
+                      startX: space.x,
+                      startY: space.y,
+                      moved: false,
+                    };
+
+                    event.currentTarget.setPointerCapture(event.pointerId);
+                  }}
+                  onPointerMove={(event) => {
+                    const dragState = spaceDragRef.current;
+                    const viewport = viewportRef.current;
+
+                    if (
+                      !isEditing ||
+                      !dragState ||
+                      !viewport ||
+                      dragState.id !== space.id ||
+                      dragState.pointerId !== event.pointerId
+                    ) {
+                      return;
+                    }
+
+                    const rect = viewport.getBoundingClientRect();
+                    const nextX =
+                      (viewport.scrollLeft + event.clientX - rect.left) / zoom -
+                      dragState.offsetX;
+                    const nextY =
+                      (viewport.scrollTop + event.clientY - rect.top) / zoom -
+                      dragState.offsetY;
+                    const clampedX = clamp(
+                      nextX,
+                      SPACE_EDGE_PADDING,
+                      BOARD_CANVAS.width - SPACE_EDGE_PADDING,
+                    );
+                    const clampedY = clamp(
+                      nextY,
+                      SPACE_EDGE_PADDING,
+                      BOARD_CANVAS.height - SPACE_EDGE_PADDING,
+                    );
+
+                    if (
+                      Math.abs(clampedX - dragState.startX) > 4 ||
+                      Math.abs(clampedY - dragState.startY) > 4
+                    ) {
+                      dragState.moved = true;
+                    }
+
+                    onMoveSpace(space.id, { x: clampedX, y: clampedY });
+                  }}
+                  onPointerUp={(event) => {
+                    const dragState = spaceDragRef.current;
+
+                    if (
+                      !isEditing ||
+                      !dragState ||
+                      dragState.id !== space.id ||
+                      dragState.pointerId !== event.pointerId
+                    ) {
+                      return;
+                    }
+
+                    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                      event.currentTarget.releasePointerCapture(event.pointerId);
+                    }
+
+                    spaceDragRef.current = null;
+
+                    if (!dragState.moved) {
+                      onEditSpace(space);
+                    }
+                  }}
+                  onPointerCancel={(event) => {
+                    const dragState = spaceDragRef.current;
+
+                    if (
+                      !dragState ||
+                      dragState.id !== space.id ||
+                      dragState.pointerId !== event.pointerId
+                    ) {
+                      return;
+                    }
+
+                    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
+                      event.currentTarget.releasePointerCapture(event.pointerId);
+                    }
+
+                    spaceDragRef.current = null;
                   }}
                 >
                   <div className="absolute -left-2 -top-2 z-20 flex h-7 w-7 items-center justify-center rounded-full border-2 border-gray-800 bg-white text-[10px] font-black text-gray-800 shadow-sm">

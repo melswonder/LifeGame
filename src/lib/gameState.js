@@ -133,6 +133,7 @@ export const createInitialBoard = () => {
 export const createInitialGameState = () => ({
   board: createInitialBoard(),
   branches: [],
+  backgroundImageUrl: null,
   players: createInitialPlayers(),
   currentPlayerIndex: 0,
   isEditing: false,
@@ -173,6 +174,10 @@ export const normalizeGameState = (rawState) => {
   return {
     board,
     branches,
+    backgroundImageUrl:
+      typeof rawState?.backgroundImageUrl === "string" && rawState.backgroundImageUrl.trim()
+        ? rawState.backgroundImageUrl
+        : defaultState.backgroundImageUrl,
     players,
     currentPlayerIndex: clamp(
       getNumber(rawState?.currentPlayerIndex, defaultState.currentPlayerIndex),

@@ -35,6 +35,9 @@ export default function App() {
   );
   const [board, setBoard] = useState(initialState.board);
   const [branches, setBranches] = useState(initialState.branches ?? []);
+  const [backgroundImageUrl, setBackgroundImageUrl] = useState(
+    initialState.backgroundImageUrl ?? null,
+  );
   const [players, setPlayers] = useState(initialState.players);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(initialState.currentPlayerIndex);
   const [isEditing, setIsEditing] = useState(initialState.isEditing);
@@ -44,8 +47,15 @@ export default function App() {
   const [branchStartId, setBranchStartId] = useState(null);
 
   useEffect(() => {
-    saveGameState({ board, branches, players, currentPlayerIndex, isEditing });
-  }, [board, branches, players, currentPlayerIndex, isEditing]);
+    saveGameState({
+      board,
+      branches,
+      backgroundImageUrl,
+      players,
+      currentPlayerIndex,
+      isEditing,
+    });
+  }, [board, branches, backgroundImageUrl, players, currentPlayerIndex, isEditing]);
 
   useEffect(() => {
     if (!isEditing) {
@@ -186,7 +196,14 @@ export default function App() {
   };
 
   const handleExportState = () => {
-    downloadGameState({ board, branches, players, currentPlayerIndex, isEditing });
+    downloadGameState({
+      board,
+      branches,
+      backgroundImageUrl,
+      players,
+      currentPlayerIndex,
+      isEditing,
+    });
   };
 
   const handleImportState = async (file) => {
@@ -195,6 +212,7 @@ export default function App() {
       const nextState = normalizeGameState(JSON.parse(text));
       setBoard(nextState.board);
       setBranches(nextState.branches);
+      setBackgroundImageUrl(nextState.backgroundImageUrl);
       setPlayers(nextState.players);
       setCurrentPlayerIndex(nextState.currentPlayerIndex);
       setIsEditing(nextState.isEditing);
@@ -212,6 +230,7 @@ export default function App() {
     clearGameState();
     setBoard(nextState.board);
     setBranches(nextState.branches);
+    setBackgroundImageUrl(nextState.backgroundImageUrl);
     setPlayers(nextState.players);
     setCurrentPlayerIndex(nextState.currentPlayerIndex);
     setIsEditing(nextState.isEditing);
@@ -226,6 +245,7 @@ export default function App() {
         <BoardArea
           board={board}
           branches={branches}
+          backgroundImageUrl={backgroundImageUrl}
           players={players}
           isEditing={isEditing}
           mapEditTool={mapEditTool}
@@ -284,6 +304,9 @@ export default function App() {
         maxPlayers={PLAYER_CONFIG.maxPlayerCount}
         onUpdatePlayer={handleUpdatePlayer}
         onChangePlayerCount={handleChangePlayerCount}
+        backgroundImageUrl={backgroundImageUrl}
+        onUpdateBackgroundImage={setBackgroundImageUrl}
+        onClearBackgroundImage={() => setBackgroundImageUrl(null)}
         onExportState={handleExportState}
         onImportState={handleImportState}
         onResetState={handleResetState}

@@ -52,6 +52,7 @@ const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
 export default function BoardArea({
   board,
   branches,
+  backgroundImageUrl,
   players,
   isEditing,
   mapEditTool,
@@ -330,8 +331,22 @@ export default function BoardArea({
               transform: `scale(${zoom})`,
             }}
           >
-            <div className="absolute inset-0 rounded-[48px] bg-[radial-gradient(circle_at_top_left,_#f0fdf4_0%,_#dcfce7_35%,_#bbf7d0_70%,_#a7f3d0_100%)]" />
+            {backgroundImageUrl && (
+              <img
+                src={backgroundImageUrl}
+                alt="マップ背景"
+                className="absolute inset-0 h-full w-full rounded-[48px] object-cover opacity-70"
+              />
+            )}
+            <div
+              className={`absolute inset-0 rounded-[48px] bg-[radial-gradient(circle_at_top_left,_#f0fdf4_0%,_#dcfce7_35%,_#bbf7d0_70%,_#a7f3d0_100%)] ${
+                backgroundImageUrl ? "opacity-70" : ""
+              }`}
+            />
             <div className="absolute inset-0 rounded-[48px] bg-[radial-gradient(circle_at_bottom_right,_rgba(255,255,255,0.18)_0%,_transparent_45%)]" />
+            {backgroundImageUrl && (
+              <div className="absolute inset-0 rounded-[48px] bg-[linear-gradient(180deg,_rgba(236,253,245,0.16)_0%,_rgba(240,253,250,0.08)_100%)]" />
+            )}
 
             <svg
               viewBox={`0 0 ${BOARD_CANVAS.width} ${BOARD_CANVAS.height}`}

@@ -1,11 +1,13 @@
 import { useRef } from "react";
 import {
+  Image as ImageIcon,
   Minus,
   Plus,
   Settings,
-  Upload,
   Download,
   RotateCcw,
+  Trash2,
+  Upload,
   UserCircle,
   X,
 } from "lucide-react";
@@ -20,13 +22,17 @@ export default function SettingsModal({
   jobOptions,
   minPlayers,
   maxPlayers,
+  backgroundImageUrl,
   onUpdatePlayer,
   onChangePlayerCount,
+  onUpdateBackgroundImage,
+  onClearBackgroundImage,
   onExportState,
   onImportState,
   onResetState,
 }) {
   const importInputRef = useRef(null);
+  const backgroundInputRef = useRef(null);
 
   if (!isOpen) {
     return null;
@@ -45,6 +51,20 @@ export default function SettingsModal({
     reader.readAsDataURL(file);
   };
 
+  const handleBackgroundUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      onUpdateBackgroundImage(typeof reader.result === "string" ? reader.result : null);
+    };
+    reader.readAsDataURL(file);
+    event.target.value = "";
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
       <div className="flex max-h-[90vh] w-full max-w-md flex-col overflow-hidden rounded-2xl bg-white shadow-2xl">
@@ -58,8 +78,8 @@ export default function SettingsModal({
         </div>
 
         <div className="space-y-6 overflow-y-auto p-6">
-          <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-gray-50 p-4">
-            <div>
+          <div className="flex items-start gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <div className="min-w-0 flex-1">
               <div className="font-bold text-gray-800">マップ編集モード</div>
               <div className="mt-1 text-xs text-gray-500">
                 盤面のマスをドラッグして移動、クリックで効果を編集、分岐作成モードも使えます
@@ -68,12 +88,15 @@ export default function SettingsModal({
             <button
               type="button"
               onClick={() => setIsEditing(!isEditing)}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                isEditing ? "bg-blue-600" : "bg-gray-300"
+              aria-pressed={isEditing}
+              className={`relative mt-0.5 inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition-colors ${
+                isEditing
+                  ? "border-blue-700 bg-blue-600"
+                  : "border-gray-300 bg-gray-300"
               }`}
             >
               <span
-                className={`inline-block h-4 w-4 rounded-full bg-white transition-transform ${
+                className={`inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
                   isEditing ? "translate-x-6" : "translate-x-1"
                 }`}
               />
@@ -101,6 +124,52 @@ export default function SettingsModal({
                 );
               })}
             </select>
+          </div>
+
+          <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">
+            <div className="mb-3 flex items-center gap-2 font-bold text-gray-800">
+              <ImageIcon className="h-5 w-5" /> マップ背景画像
+            </div>
+            <div className="mb-3 text-xs text-gray-500">
+              背景画像を差し込めます。書き出し JSON にも含まれるので、読み込みでそのまま復元できます。
+            </div>
+            <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+              {backgroundImageUrl ? (
+                <img
+                  src={backgroundImageUrl}
+                  alt="マップ背景"
+                  className="h-40 w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-40 items-center justify-center bg-gray-100 text-sm font-bold text-gray-400">
+                  背景画像は未設定です
+                </div>
+              )}
+            </div>
+            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => backgroundInputRef.current?.click()}
+                className="flex items-center justify-center gap-2 rounded-lg bg-emerald-600 px-3 py-2 text-sm font-bold text-white hover:bg-emerald-700"
+              >
+                <Upload className="h-4 w-4" /> 画像を選ぶ
+              </button>
+              <button
+                type="button"
+                onClick={onClearBackgroundImage}
+                disabled={!backgroundImageUrl}
+                className="flex items-center justify-center gap-2 rounded-lg bg-gray-200 px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" /> 背景を外す
+              </button>
+            </div>
+            <input
+              ref={backgroundInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleBackgroundUpload}
+            />
           </div>
 
           <div className="rounded-xl border border-gray-200 bg-gray-50 p-4">

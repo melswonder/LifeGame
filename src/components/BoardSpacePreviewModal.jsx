@@ -70,8 +70,12 @@ export default function BoardSpacePreviewModal({ isOpen, space, onClose }) {
 
         <div className="space-y-5 p-6">
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-            <div className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">内容</div>
-            <div className="text-base font-bold leading-relaxed text-gray-800">{space.text}</div>
+            <div className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">
+              内容
+            </div>
+            <div className="text-base font-bold leading-relaxed text-gray-800">
+              {space.text}
+            </div>
           </div>
         </div>
       </div>

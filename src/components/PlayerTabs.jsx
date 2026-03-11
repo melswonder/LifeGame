@@ -16,7 +16,11 @@ export default function PlayerTabs({ players, currentIndex, onSelectPlayer }) {
             className={`flex h-5 w-5 items-center justify-center overflow-hidden rounded-full border border-gray-800 text-[10px] ${player.color}`}
           >
             {player.imageUrl ? (
-              <img src={player.imageUrl} alt="" className="h-full w-full object-cover" />
+              <img
+                src={player.imageUrl}
+                alt=""
+                className="h-full w-full object-cover"
+              />
             ) : (
               player.icon
             )}

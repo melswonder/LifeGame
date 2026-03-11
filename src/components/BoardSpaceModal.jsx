@@ -62,16 +62,24 @@ export default function BoardSpaceModal({
         <div className="flex items-center justify-between rounded-t-2xl bg-gray-900 px-5 py-4 text-white">
           <div>
             <div className="text-sm font-bold">マス {space.id} を編集</div>
-            <div className="text-xs text-gray-300">テキストと色を変更できます</div>
+            <div className="text-xs text-gray-300">
+              テキストと色を変更できます
+            </div>
           </div>
-          <button type="button" onClick={onClose} className="rounded-full p-1 hover:bg-gray-800">
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1 hover:bg-gray-800"
+          >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         <div className="space-y-5 p-5">
           <div>
-            <label className="mb-2 block text-sm font-bold text-gray-800">マスのテキスト</label>
+            <label className="mb-2 block text-sm font-bold text-gray-800">
+              マスのテキスト
+            </label>
             <textarea
               value={text}
               onChange={(event) => setText(event.target.value)}
@@ -82,7 +90,9 @@ export default function BoardSpaceModal({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-bold text-gray-800">マスの種類</label>
+            <label className="mb-2 block text-sm font-bold text-gray-800">
+              マスの種類
+            </label>
             <select
               value={type}
               onChange={(event) => setType(event.target.value)}
@@ -120,7 +130,9 @@ export default function BoardSpaceModal({
             <div className="mb-2 text-sm font-bold text-gray-800">効果設定</div>
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
               <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-1 text-xs font-bold text-gray-500">所持金変化</div>
+                <div className="mb-1 text-xs font-bold text-gray-500">
+                  所持金変化
+                </div>
                 <input
                   type="number"
                   value={money}
@@ -129,16 +141,22 @@ export default function BoardSpaceModal({
                 />
               </label>
               <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-1 text-xs font-bold text-gray-500">同乗者増減</div>
+                <div className="mb-1 text-xs font-bold text-gray-500">
+                  同乗者増減
+                </div>
                 <input
                   type="number"
                   value={addCarPeople}
-                  onChange={(event) => setAddCarPeople(Number(event.target.value))}
+                  onChange={(event) =>
+                    setAddCarPeople(Number(event.target.value))
+                  }
                   className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </label>
               <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-1 text-xs font-bold text-gray-500">借金増減</div>
+                <div className="mb-1 text-xs font-bold text-gray-500">
+                  借金増減
+                </div>
                 <input
                   type="number"
                   value={addDebt}
@@ -150,10 +168,14 @@ export default function BoardSpaceModal({
           </div>
 
           <div>
-            <div className="mb-2 text-sm font-bold text-gray-800">マップ座標</div>
+            <div className="mb-2 text-sm font-bold text-gray-800">
+              マップ座標
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-1 text-xs font-bold text-gray-500">X 座標</div>
+                <div className="mb-1 text-xs font-bold text-gray-500">
+                  X 座標
+                </div>
                 <input
                   type="number"
                   value={x}
@@ -162,7 +184,9 @@ export default function BoardSpaceModal({
                 />
               </label>
               <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-1 text-xs font-bold text-gray-500">Y 座標</div>
+                <div className="mb-1 text-xs font-bold text-gray-500">
+                  Y 座標
+                </div>
                 <input
                   type="number"
                   value={y}
@@ -172,7 +196,8 @@ export default function BoardSpaceModal({
               </label>
             </div>
             <div className="mt-2 text-xs text-gray-500">
-              編集モードではドラッグ移動もできます。JSON の盤面書き出しにもこの座標が保存されます。
+              編集モードではドラッグ移動もできます。JSON
+              の盤面書き出しにもこの座標が保存されます。
             </div>
           </div>
 

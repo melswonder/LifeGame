@@ -1,5 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { GitBranch, LocateFixed, Minus, Plus, Route, Undo2 } from "lucide-react";
+import {
+  GitBranch,
+  LocateFixed,
+  Minus,
+  Plus,
+  Route,
+  Undo2,
+} from "lucide-react";
 import { buildBoardRouteSegments } from "../lib/boardBranches.js";
 import {
   BOARD_CANVAS,
@@ -80,7 +87,10 @@ export default function BoardArea({
   }, [board]);
 
   const routePaths = useMemo(
-    () => buildBoardRouteSegments(mapSpaces, branches).map((points) => buildPolylinePath(points)),
+    () =>
+      buildBoardRouteSegments(mapSpaces, branches).map((points) =>
+        buildPolylinePath(points),
+      ),
     [branches, mapSpaces],
   );
 
@@ -323,7 +333,10 @@ export default function BoardArea({
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
       >
-        <div className="relative" style={{ width: scaledWidth, height: scaledHeight }}>
+        <div
+          className="relative"
+          style={{ width: scaledWidth, height: scaledHeight }}
+        >
           <div
             className="absolute left-0 top-0 origin-top-left"
             style={{
@@ -417,7 +430,9 @@ export default function BoardArea({
               {BOARD_MOUNTAINS.map((mountain, index) => (
                 <g key={index}>
                   <polygon
-                    points={mountain.points.map((point) => `${point.x},${point.y}`).join(" ")}
+                    points={mountain.points
+                      .map((point) => `${point.x},${point.y}`)
+                      .join(" ")}
                     fill={mountain.fill}
                     opacity="0.95"
                   />
@@ -519,7 +534,9 @@ export default function BoardArea({
             ))}
 
             {mapSpaces.map((space) => {
-              const playersHere = players.filter((player) => player.position === space.id);
+              const playersHere = players.filter(
+                (player) => player.position === space.id,
+              );
               const { bgColor, textColor } =
                 SPACE_COLOR_STYLES[space.color] ?? SPACE_COLOR_STYLES.blue;
               const accentClass =
@@ -563,7 +580,11 @@ export default function BoardArea({
                     onSelectBranchSpace(space.id);
                   }}
                   onPointerDown={(event) => {
-                    if (!isEditing || mapEditTool !== "space" || event.button !== 0) {
+                    if (
+                      !isEditing ||
+                      mapEditTool !== "space" ||
+                      event.button !== 0
+                    ) {
                       return;
                     }
 
@@ -647,8 +668,12 @@ export default function BoardArea({
                       return;
                     }
 
-                    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-                      event.currentTarget.releasePointerCapture(event.pointerId);
+                    if (
+                      event.currentTarget.hasPointerCapture(event.pointerId)
+                    ) {
+                      event.currentTarget.releasePointerCapture(
+                        event.pointerId,
+                      );
                     }
 
                     spaceDragRef.current = null;
@@ -668,8 +693,12 @@ export default function BoardArea({
                       return;
                     }
 
-                    if (event.currentTarget.hasPointerCapture(event.pointerId)) {
-                      event.currentTarget.releasePointerCapture(event.pointerId);
+                    if (
+                      event.currentTarget.hasPointerCapture(event.pointerId)
+                    ) {
+                      event.currentTarget.releasePointerCapture(
+                        event.pointerId,
+                      );
                     }
 
                     spaceDragRef.current = null;
@@ -681,11 +710,17 @@ export default function BoardArea({
 
                   {(isBranchStart || isBranchEnd || isBranchDraft) && (
                     <div className="absolute -right-2 -top-2 z-20 rounded-full border border-gray-800 bg-white px-2 py-1 text-[9px] font-black text-gray-800 shadow-sm">
-                      {isBranchDraft ? "選択中" : isBranchStart ? "分岐" : "合流"}
+                      {isBranchDraft
+                        ? "選択中"
+                        : isBranchStart
+                          ? "分岐"
+                          : "合流"}
                     </div>
                   )}
 
-                  <div className={`line-clamp-3 text-[10px] font-bold leading-tight ${textColor}`}>
+                  <div
+                    className={`line-clamp-3 text-[10px] font-bold leading-tight ${textColor}`}
+                  >
                     {space.text}
                   </div>
 

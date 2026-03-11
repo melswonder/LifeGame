@@ -20,7 +20,10 @@ export default function CircularRoulette({ onSpin }) {
     "#22d3ee",
   ];
   const conicGradient = colors
-    .map((color, index) => `${color} ${index * sliceAngle}deg ${(index + 1) * sliceAngle}deg`)
+    .map(
+      (color, index) =>
+        `${color} ${index * sliceAngle}deg ${(index + 1) * sliceAngle}deg`,
+    )
     .join(", ");
 
   const handleSpin = () => {
@@ -35,7 +38,8 @@ export default function CircularRoulette({ onSpin }) {
     const targetIndex = numbers.indexOf(targetNumber);
     const extraSpins = 5 * 360;
     const targetAngle = 360 - targetIndex * sliceAngle - sliceAngle / 2;
-    const newRotation = rotation + extraSpins + (targetAngle - (rotation % 360));
+    const newRotation =
+      rotation + extraSpins + (targetAngle - (rotation % 360));
 
     setRotation(newRotation);
 
@@ -48,7 +52,9 @@ export default function CircularRoulette({ onSpin }) {
 
   return (
     <div className="flex flex-col items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-md">
-      <div className="w-full text-left text-sm font-bold text-gray-500">ルーレット</div>
+      <div className="w-full text-left text-sm font-bold text-gray-500">
+        ルーレット
+      </div>
 
       <div className="relative h-44 w-44">
         <div className="absolute left-1/2 top-0 z-20 h-0 w-0 -translate-x-1/2 -translate-y-1 border-l-[10px] border-r-[10px] border-t-[20px] border-l-transparent border-r-transparent border-t-red-600 drop-shadow-md" />
@@ -90,7 +96,11 @@ export default function CircularRoulette({ onSpin }) {
       </div>
 
       <div className="flex h-8 items-center justify-center font-bold text-gray-700">
-        {result !== null && <span className="animate-bounce text-lg text-red-600">{result} が出ました！</span>}
+        {result !== null && (
+          <span className="animate-bounce text-lg text-red-600">
+            {result} が出ました！
+          </span>
+        )}
       </div>
     </div>
   );

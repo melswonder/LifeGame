@@ -48,7 +48,9 @@ export default function App() {
     normalizeJobOptions(initialState.jobOptions ?? DEFAULT_JOB_OPTIONS),
   );
   const [players, setPlayers] = useState(initialState.players);
-  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(initialState.currentPlayerIndex);
+  const [currentPlayerIndex, setCurrentPlayerIndex] = useState(
+    initialState.currentPlayerIndex,
+  );
   const [isEditing, setIsEditing] = useState(initialState.isEditing);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [editingSpaceId, setEditingSpaceId] = useState(null);
@@ -66,7 +68,15 @@ export default function App() {
       currentPlayerIndex,
       isEditing,
     });
-  }, [board, branches, backgroundImageUrl, jobOptions, players, currentPlayerIndex, isEditing]);
+  }, [
+    board,
+    branches,
+    backgroundImageUrl,
+    jobOptions,
+    players,
+    currentPlayerIndex,
+    isEditing,
+  ]);
 
   useEffect(() => {
     if (!isEditing) {
@@ -87,11 +97,15 @@ export default function App() {
   }, [mapEditTool]);
 
   const currentPlayer = players[currentPlayerIndex] ?? players[0];
-  const editingSpace = board.find((space) => space.id === editingSpaceId) ?? null;
-  const previewSpace = board.find((space) => space.id === previewSpaceId) ?? null;
+  const editingSpace =
+    board.find((space) => space.id === editingSpaceId) ?? null;
+  const previewSpace =
+    board.find((space) => space.id === previewSpaceId) ?? null;
 
   const handleUpdateSpace = (id, newSpaceData) => {
-    setBoard((previous) => previous.map((space) => (space.id === id ? newSpaceData : space)));
+    setBoard((previous) =>
+      previous.map((space) => (space.id === id ? newSpaceData : space)),
+    );
   };
 
   const handleOpenSpaceEditor = (space) => {
@@ -128,7 +142,10 @@ export default function App() {
           return space;
         }
 
-        const position = clampBoardPoint(updates?.x ?? space.x, updates?.y ?? space.y);
+        const position = clampBoardPoint(
+          updates?.x ?? space.x,
+          updates?.y ?? space.y,
+        );
         return { ...space, ...updates, ...position };
       }),
     );
@@ -149,7 +166,12 @@ export default function App() {
       return;
     }
 
-    const result = createBranchBetweenSpaces(board, branches, branchStartId, spaceId);
+    const result = createBranchBetweenSpaces(
+      board,
+      branches,
+      branchStartId,
+      spaceId,
+    );
     if (result.error) {
       window.alert(result.error);
       return;
@@ -175,13 +197,23 @@ export default function App() {
   };
 
   const handleUpdatePlayer = (id, updates) => {
-    setPlayers((previous) => previous.map((player) => (player.id === id ? { ...player, ...updates } : player)));
+    setPlayers((previous) =>
+      previous.map((player) =>
+        player.id === id ? { ...player, ...updates } : player,
+      ),
+    );
   };
 
   const handleChangeBoardCount = (nextCount) => {
-    const boundedCount = Math.max(MIN_BOARD_SPACES, Math.min(MAX_BOARD_SPACES, nextCount));
+    const boundedCount = Math.max(
+      MIN_BOARD_SPACES,
+      Math.min(MAX_BOARD_SPACES, nextCount),
+    );
     const nextBoard = normalizeBoard(
-      Array.from({ length: boundedCount }, (_, index) => board[index] ?? { id: index }),
+      Array.from(
+        { length: boundedCount },
+        (_, index) => board[index] ?? { id: index },
+      ),
     );
     const nextBranches = normalizeBranches(branches, boundedCount);
 
@@ -193,15 +225,23 @@ export default function App() {
         position: Math.min(player.position, boundedCount - 1),
       })),
     );
-    setEditingSpaceId((previous) => (previous !== null && previous >= boundedCount ? null : previous));
-    setPreviewSpaceId((previous) => (previous !== null && previous >= boundedCount ? null : previous));
-    setBranchStartId((previous) => (previous !== null && previous >= boundedCount ? null : previous));
+    setEditingSpaceId((previous) =>
+      previous !== null && previous >= boundedCount ? null : previous,
+    );
+    setPreviewSpaceId((previous) =>
+      previous !== null && previous >= boundedCount ? null : previous,
+    );
+    setBranchStartId((previous) =>
+      previous !== null && previous >= boundedCount ? null : previous,
+    );
   };
 
   const handleChangePlayerCount = (newCount) => {
     setPlayers((previous) => {
       if (newCount > previous.length) {
-        const addedPlayers = Array.from({ length: newCount - previous.length }).map((_, index) =>
+        const addedPlayers = Array.from({
+          length: newCount - previous.length,
+        }).map((_, index) =>
           createPlayer(previous.length + index, {}, jobOptions),
         );
         return [...previous, ...addedPlayers];
@@ -234,7 +274,10 @@ export default function App() {
       }
 
       activePlayer.position = targetPosition;
-      nextPlayers[currentPlayerIndex] = applySpaceEffects(activePlayer, board[targetPosition]);
+      nextPlayers[currentPlayerIndex] = applySpaceEffects(
+        activePlayer,
+        board[targetPosition],
+      );
       return nextPlayers;
     });
   };
@@ -272,7 +315,9 @@ export default function App() {
       setBranchStartId(null);
       window.alert("JSON の読み込みが完了しました。");
     } catch {
-      window.alert("JSON の読み込みに失敗しました。ファイル形式を確認してください。");
+      window.alert(
+        "JSON の読み込みに失敗しました。ファイル形式を確認してください。",
+      );
     }
   };
 
@@ -325,7 +370,10 @@ export default function App() {
           />
           <div className="flex-1 overflow-y-auto bg-gray-50/50">
             {currentPlayer && (
-              <PlayerStatus player={currentPlayer} onUpdatePlayer={handleUpdatePlayer} />
+              <PlayerStatus
+                player={currentPlayer}
+                onUpdatePlayer={handleUpdatePlayer}
+              />
             )}
           </div>
         </div>
@@ -390,14 +438,17 @@ export default function App() {
 
           if (
             nextName !== currentJob.name &&
-            jobOptions.some((job, jobIndex) => jobIndex !== index && job.name === nextName)
+            jobOptions.some(
+              (job, jobIndex) => jobIndex !== index && job.name === nextName,
+            )
           ) {
             window.alert("同じ名前の職種は作れません。");
             return;
           }
 
           const nextSalary =
-            typeof updates.salary === "number" && Number.isFinite(updates.salary)
+            typeof updates.salary === "number" &&
+            Number.isFinite(updates.salary)
               ? Math.max(0, updates.salary)
               : currentJob.salary;
 
@@ -426,14 +477,20 @@ export default function App() {
             return;
           }
 
-          const nextJobOptions = jobOptions.filter((_, jobIndex) => jobIndex !== index);
+          const nextJobOptions = jobOptions.filter(
+            (_, jobIndex) => jobIndex !== index,
+          );
           const fallbackJob = nextJobOptions[0];
 
           setJobOptions(nextJobOptions);
           setPlayers((previous) =>
             previous.map((player) =>
               player.job === removedJob.name
-                ? { ...player, job: fallbackJob.name, salary: fallbackJob.salary }
+                ? {
+                    ...player,
+                    job: fallbackJob.name,
+                    salary: fallbackJob.salary,
+                  }
                 : player,
             ),
           );

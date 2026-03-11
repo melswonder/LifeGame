@@ -101,11 +101,36 @@ export const SCENIC_TRAILS = [
 ].map(scalePoints);
 
 export const BOARD_LANDMARKS = [
-  { x: 160, y: 1120, label: "はじまりの街", tone: "bg-sky-100 text-sky-900 border-sky-300" },
-  { x: 365, y: 690, label: "森の抜け道", tone: "bg-emerald-100 text-emerald-900 border-emerald-300" },
-  { x: 890, y: 170, label: "険しい山道", tone: "bg-slate-100 text-slate-900 border-slate-300" },
-  { x: 1570, y: 620, label: "湖畔の分岐", tone: "bg-cyan-100 text-cyan-900 border-cyan-300" },
-  { x: 1640, y: 1148, label: "ゴールシティ", tone: "bg-amber-100 text-amber-900 border-amber-300" },
+  {
+    x: 160,
+    y: 1120,
+    label: "はじまりの街",
+    tone: "bg-sky-100 text-sky-900 border-sky-300",
+  },
+  {
+    x: 365,
+    y: 690,
+    label: "森の抜け道",
+    tone: "bg-emerald-100 text-emerald-900 border-emerald-300",
+  },
+  {
+    x: 890,
+    y: 170,
+    label: "険しい山道",
+    tone: "bg-slate-100 text-slate-900 border-slate-300",
+  },
+  {
+    x: 1570,
+    y: 620,
+    label: "湖畔の分岐",
+    tone: "bg-cyan-100 text-cyan-900 border-cyan-300",
+  },
+  {
+    x: 1640,
+    y: 1148,
+    label: "ゴールシティ",
+    tone: "bg-amber-100 text-amber-900 border-amber-300",
+  },
 ].map(scaleLandmark);
 
 export const BOARD_HOUSES = [
@@ -208,7 +233,9 @@ const interpolatePointsAlongRoute = (points, count) => {
 
     const previousLength = segment.totalLength - segment.length;
     const progress =
-      segment.length === 0 ? 0 : (targetLength - previousLength) / segment.length;
+      segment.length === 0
+        ? 0
+        : (targetLength - previousLength) / segment.length;
 
     return {
       x: segment.start.x + (segment.end.x - segment.start.x) * progress,
@@ -219,7 +246,10 @@ const interpolatePointsAlongRoute = (points, count) => {
 
 export const getBoardLayout = (count) => {
   if (!layoutCache.has(count)) {
-    layoutCache.set(count, interpolatePointsAlongRoute(MAIN_ROUTE_WAYPOINTS, count));
+    layoutCache.set(
+      count,
+      interpolatePointsAlongRoute(MAIN_ROUTE_WAYPOINTS, count),
+    );
   }
 
   return layoutCache.get(count);

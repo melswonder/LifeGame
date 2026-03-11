@@ -1,102 +1,802 @@
 [
-  { "id": 0, "type": "start", "text": "START", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 1, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 2, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 3, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 4, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 5, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 6, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 7, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 8, "type": "lucky", "text": "バズって臨時収入！+10,000円", "money": 10000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 9, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 10, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 11, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 12, "type": "danger", "text": "謎の商材を買わされる。-5,000円", "money": -5000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 13, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 14, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 15, "type": "payday", "text": "給料日！給料をもらう", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 16, "type": "lucky", "text": "バズって臨時収入！+10,000円", "money": 10000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 17, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 18, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 19, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 20, "type": "stop", "text": "【STOP】結婚！同乗者+1、お祝金+50,000円", "money": 50000, "addCarPeople": 1, "addDebt": 0 },
-  { "id": 21, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 22, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 23, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 24, "type": "danger", "text": "謎の商材を買わされる。-5,000円", "money": -5000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 25, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 26, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 27, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 28, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 29, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 30, "type": "payday", "text": "給料日！給料をもらう", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 31, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 32, "type": "lucky", "text": "バズって臨時収入！+10,000円", "money": 10000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 33, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 34, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 35, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 36, "type": "danger", "text": "謎の商材を買わされる。-5,000円", "money": -5000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 37, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 38, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 39, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 40, "type": "lucky", "text": "バズって臨時収入！+10,000円", "money": 10000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 41, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 42, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 43, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 44, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 45, "type": "payday", "text": "給料日！給料をもらう", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 46, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 47, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 48, "type": "danger", "text": "謎の商材を買わされる。-5,000円", "money": -5000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 49, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 50, "type": "stop", "text": "【STOP】マイホーム購入！-300,000円", "money": -300000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 51, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 52, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 53, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 54, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 55, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 56, "type": "lucky", "text": "バズって臨時収入！+10,000円", "money": 10000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 57, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 58, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 59, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 60, "type": "payday", "text": "給料日！給料をもらう", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 61, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 62, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 63, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 64, "type": "lucky", "text": "バズって臨時収入！+10,000円", "money": 10000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 65, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 66, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 67, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 68, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 69, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 70, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 71, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 72, "type": "danger", "text": "謎の商材を買わされる。-5,000円", "money": -5000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 73, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 74, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 75, "type": "payday", "text": "給料日！給料をもらう", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 76, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 77, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 78, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 79, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 80, "type": "stop", "text": "【STOP】子供が生まれた！同乗者+1", "money": 0, "addCarPeople": 1, "addDebt": 0 },
-  { "id": 81, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 82, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 83, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 84, "type": "danger", "text": "謎の商材を買わされる。-5,000円", "money": -5000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 85, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 86, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 87, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 88, "type": "lucky", "text": "バズって臨時収入！+10,000円", "money": 10000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 89, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 90, "type": "payday", "text": "給料日！給料をもらう", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 91, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 92, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 93, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 94, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 95, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 96, "type": "danger", "text": "謎の商材を買わされる。-5,000円", "money": -5000, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 97, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 98, "type": "normal", "text": "何気ない日常。", "money": 0, "addCarPeople": 0, "addDebt": 0 },
-  { "id": 99, "type": "goal", "text": "GOAL（億万長者の土地）", "money": 0, "addCarPeople": 0, "addDebt": 0 }
+  {
+    "id": 0,
+    "type": "start",
+    "text": "START",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 1,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 2,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 3,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 4,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 5,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 6,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 7,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 8,
+    "type": "lucky",
+    "text": "バズって臨時収入！+10,000円",
+    "money": 10000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 9,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 10,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 11,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 12,
+    "type": "danger",
+    "text": "謎の商材を買わされる。-5,000円",
+    "money": -5000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 13,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 14,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 15,
+    "type": "payday",
+    "text": "給料日！給料をもらう",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 16,
+    "type": "lucky",
+    "text": "バズって臨時収入！+10,000円",
+    "money": 10000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 17,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 18,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 19,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 20,
+    "type": "stop",
+    "text": "【STOP】結婚！同乗者+1、お祝金+50,000円",
+    "money": 50000,
+    "addCarPeople": 1,
+    "addDebt": 0
+  },
+  {
+    "id": 21,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 22,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 23,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 24,
+    "type": "danger",
+    "text": "謎の商材を買わされる。-5,000円",
+    "money": -5000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 25,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 26,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 27,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 28,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 29,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 30,
+    "type": "payday",
+    "text": "給料日！給料をもらう",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 31,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 32,
+    "type": "lucky",
+    "text": "バズって臨時収入！+10,000円",
+    "money": 10000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 33,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 34,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 35,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 36,
+    "type": "danger",
+    "text": "謎の商材を買わされる。-5,000円",
+    "money": -5000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 37,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 38,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 39,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 40,
+    "type": "lucky",
+    "text": "バズって臨時収入！+10,000円",
+    "money": 10000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 41,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 42,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 43,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 44,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 45,
+    "type": "payday",
+    "text": "給料日！給料をもらう",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 46,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 47,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 48,
+    "type": "danger",
+    "text": "謎の商材を買わされる。-5,000円",
+    "money": -5000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 49,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 50,
+    "type": "stop",
+    "text": "【STOP】マイホーム購入！-300,000円",
+    "money": -300000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 51,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 52,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 53,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 54,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 55,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 56,
+    "type": "lucky",
+    "text": "バズって臨時収入！+10,000円",
+    "money": 10000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 57,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 58,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 59,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 60,
+    "type": "payday",
+    "text": "給料日！給料をもらう",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 61,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 62,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 63,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 64,
+    "type": "lucky",
+    "text": "バズって臨時収入！+10,000円",
+    "money": 10000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 65,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 66,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 67,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 68,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 69,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 70,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 71,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 72,
+    "type": "danger",
+    "text": "謎の商材を買わされる。-5,000円",
+    "money": -5000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 73,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 74,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 75,
+    "type": "payday",
+    "text": "給料日！給料をもらう",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 76,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 77,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 78,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 79,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 80,
+    "type": "stop",
+    "text": "【STOP】子供が生まれた！同乗者+1",
+    "money": 0,
+    "addCarPeople": 1,
+    "addDebt": 0
+  },
+  {
+    "id": 81,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 82,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 83,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 84,
+    "type": "danger",
+    "text": "謎の商材を買わされる。-5,000円",
+    "money": -5000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 85,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 86,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 87,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 88,
+    "type": "lucky",
+    "text": "バズって臨時収入！+10,000円",
+    "money": 10000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 89,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 90,
+    "type": "payday",
+    "text": "給料日！給料をもらう",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 91,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 92,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 93,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 94,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 95,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 96,
+    "type": "danger",
+    "text": "謎の商材を買わされる。-5,000円",
+    "money": -5000,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 97,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 98,
+    "type": "normal",
+    "text": "何気ない日常。",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  },
+  {
+    "id": 99,
+    "type": "goal",
+    "text": "GOAL（億万長者の土地）",
+    "money": 0,
+    "addCarPeople": 0,
+    "addDebt": 0
+  }
 ]

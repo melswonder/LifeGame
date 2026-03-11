@@ -83,7 +83,9 @@ export default function SettingsModal({
 
     const reader = new FileReader();
     reader.onloadend = () => {
-      onUpdateBackgroundImage(typeof reader.result === "string" ? reader.result : null);
+      onUpdateBackgroundImage(
+        typeof reader.result === "string" ? reader.result : null,
+      );
     };
     reader.readAsDataURL(file);
     event.target.value = "";
@@ -140,7 +142,9 @@ export default function SettingsModal({
               min={minBoardSpaces}
               max={maxBoardSpaces}
               value={boardCount}
-              onChange={(event) => onChangeBoardCount(Number(event.target.value))}
+              onChange={(event) =>
+                onChangeBoardCount(Number(event.target.value))
+              }
               className="w-28 rounded-lg border border-gray-300 bg-white px-3 py-2 text-center text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             <span className="text-sm font-bold text-gray-600">マス</span>
@@ -163,17 +167,21 @@ export default function SettingsModal({
           </div>
           <select
             value={players.length}
-            onChange={(event) => onChangePlayerCount(Number(event.target.value))}
+            onChange={(event) =>
+              onChangePlayerCount(Number(event.target.value))
+            }
             className="w-full rounded-lg border border-gray-300 bg-white p-2 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            {Array.from({ length: maxPlayers - minPlayers + 1 }).map((_, index) => {
-              const value = minPlayers + index;
-              return (
-                <option key={value} value={value}>
-                  {value}人
-                </option>
-              );
-            })}
+            {Array.from({ length: maxPlayers - minPlayers + 1 }).map(
+              (_, index) => {
+                const value = minPlayers + index;
+                return (
+                  <option key={value} value={value}>
+                    {value}人
+                  </option>
+                );
+              },
+            )}
           </select>
         </div>
       </div>
@@ -244,7 +252,9 @@ export default function SettingsModal({
               <input
                 type="text"
                 value={job.name}
-                onChange={(event) => onUpdateJobOption(index, { name: event.target.value })}
+                onChange={(event) =>
+                  onUpdateJobOption(index, { name: event.target.value })
+                }
                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="職種名"
               />
@@ -252,7 +262,11 @@ export default function SettingsModal({
                 type="number"
                 min="0"
                 value={job.salary}
-                onChange={(event) => onUpdateJobOption(index, { salary: Number(event.target.value) })}
+                onChange={(event) =>
+                  onUpdateJobOption(index, {
+                    salary: Number(event.target.value),
+                  })
+                }
                 className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="給料"
               />
@@ -294,7 +308,11 @@ export default function SettingsModal({
                   title="画像をアップロード"
                 >
                   {player.imageUrl ? (
-                    <img src={player.imageUrl} alt="icon" className="h-full w-full object-cover" />
+                    <img
+                      src={player.imageUrl}
+                      alt="icon"
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     player.icon
                   )}
@@ -308,7 +326,9 @@ export default function SettingsModal({
                 <input
                   type="text"
                   value={player.name}
-                  onChange={(event) => onUpdatePlayer(player.id, { name: event.target.value })}
+                  onChange={(event) =>
+                    onUpdatePlayer(player.id, { name: event.target.value })
+                  }
                   className="min-w-0 flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder={`プレイヤー ${player.id}`}
                 />
@@ -338,7 +358,10 @@ export default function SettingsModal({
                     value={player.position}
                     onChange={(event) =>
                       onUpdatePlayer(player.id, {
-                        position: Math.max(0, Math.min(boardCount - 1, Number(event.target.value))),
+                        position: Math.max(
+                          0,
+                          Math.min(boardCount - 1, Number(event.target.value)),
+                        ),
                       })
                     }
                     className="w-16 rounded border border-gray-300 p-1 text-center text-sm font-bold focus:outline-none focus:ring-1 focus:ring-blue-500"
@@ -359,11 +382,15 @@ export default function SettingsModal({
               </div>
 
               <div className="flex items-center justify-between gap-2 rounded border border-gray-200 bg-gray-50 p-2">
-                <span className="whitespace-nowrap text-xs font-bold text-gray-600">職業:</span>
+                <span className="whitespace-nowrap text-xs font-bold text-gray-600">
+                  職業:
+                </span>
                 <select
                   value={player.job}
                   onChange={(event) => {
-                    const selectedJob = jobOptions.find((job) => job.name === event.target.value);
+                    const selectedJob = jobOptions.find(
+                      (job) => job.name === event.target.value,
+                    );
                     if (selectedJob) {
                       onUpdatePlayer(player.id, {
                         job: selectedJob.name,
@@ -392,7 +419,8 @@ export default function SettingsModal({
       <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
         <div className="mb-3 text-sm font-black text-gray-900">JSON 管理</div>
         <div className="mb-3 text-xs text-gray-500">
-          現在の盤面、分岐、マップ座標、背景画像、職種、プレイヤー状態を 1 つの JSON として保存します。
+          現在の盤面、分岐、マップ座標、背景画像、職種、プレイヤー状態を 1 つの
+          JSON として保存します。
         </div>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
           <button
@@ -458,9 +486,7 @@ export default function SettingsModal({
             >
               <X className="h-5 w-5" />
             </button>
-            <h3 className="flex items-center gap-2 font-bold">
-              システム設定
-            </h3>
+            <h3 className="flex items-center gap-2 font-bold">システム設定</h3>
           </div>
 
           <div className="flex-1 space-y-2 p-4">
@@ -490,7 +516,10 @@ export default function SettingsModal({
         <div className="flex min-w-0 flex-1 flex-col bg-white">
           <div className="border-b border-gray-200 px-6 py-5">
             <div className="text-xs font-bold uppercase tracking-[0.2em] text-gray-400">
-              {SETTING_SECTIONS.find((section) => section.id === activeSection)?.label}
+              {
+                SETTING_SECTIONS.find((section) => section.id === activeSection)
+                  ?.label
+              }
             </div>
             <div className="mt-1 text-2xl font-black text-gray-900">
               {activeSection === "general" && "一般設定"}
@@ -499,7 +528,9 @@ export default function SettingsModal({
             </div>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto p-6">{renderSectionContent()}</div>
+          <div className="min-h-0 flex-1 overflow-y-auto p-6">
+            {renderSectionContent()}
+          </div>
         </div>
       </div>
     </div>

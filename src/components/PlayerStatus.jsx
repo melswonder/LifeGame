@@ -33,15 +33,22 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
   }, [player.id]);
 
   const updateDebt = (amount) =>
-    onUpdatePlayer(player.id, { debtCount: Math.max(0, player.debtCount + amount) });
+    onUpdatePlayer(player.id, {
+      debtCount: Math.max(0, player.debtCount + amount),
+    });
 
   const updateCar = (amount) =>
     onUpdatePlayer(player.id, {
-      carPeople: Math.max(1, Math.min(player.carCapacity, player.carPeople + amount)),
+      carPeople: Math.max(
+        1,
+        Math.min(player.carCapacity, player.carPeople + amount),
+      ),
     });
 
   const updateDopamine = (amount) =>
-    onUpdatePlayer(player.id, { dopamine: Math.max(0, player.dopamine + amount) });
+    onUpdatePlayer(player.id, {
+      dopamine: Math.max(0, player.dopamine + amount),
+    });
 
   const toggleSkippingTurn = () =>
     onUpdatePlayer(player.id, { isSkippingTurn: !player.isSkippingTurn });
@@ -78,7 +85,11 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
     }
 
     const value = Number(resultString);
-    if (Number.isNaN(value) || resultString === "Error" || resultString === "") {
+    if (
+      Number.isNaN(value) ||
+      resultString === "Error" ||
+      resultString === ""
+    ) {
       return;
     }
 
@@ -97,7 +108,24 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
     setCalcInput("");
   };
 
-  const calcButtons = ["7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "C", "0", "=", "+"];
+  const calcButtons = [
+    "7",
+    "8",
+    "9",
+    "/",
+    "4",
+    "5",
+    "6",
+    "*",
+    "1",
+    "2",
+    "3",
+    "-",
+    "C",
+    "0",
+    "=",
+    "+",
+  ];
 
   return (
     <div className="space-y-3 p-3">
@@ -108,13 +136,19 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
               className={`flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-gray-800 text-sm shadow-sm ${player.color}`}
             >
               {player.imageUrl ? (
-                <img src={player.imageUrl} alt="" className="h-full w-full object-cover" />
+                <img
+                  src={player.imageUrl}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
               ) : (
                 player.icon
               )}
             </div>
             <div className="flex flex-col">
-              <span className="text-[10px] leading-tight text-yellow-700">{player.name} の</span>
+              <span className="text-[10px] leading-tight text-yellow-700">
+                {player.name} の
+              </span>
               <span className="leading-tight">現在の所持金</span>
             </div>
           </div>
@@ -167,7 +201,9 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
               className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-red-500 py-1.5 text-[10px] font-bold text-white shadow transition-colors hover:bg-red-600 active:scale-95"
             >
               <span>結果を</span>
-              <span className="rounded-full bg-red-700/50 px-2">減らす (-)</span>
+              <span className="rounded-full bg-red-700/50 px-2">
+                減らす (-)
+              </span>
             </button>
             <button
               type="button"
@@ -175,7 +211,9 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
               className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-green-500 py-1.5 text-[10px] font-bold text-white shadow transition-colors hover:bg-green-600 active:scale-95"
             >
               <span>結果を</span>
-              <span className="rounded-full bg-green-700/50 px-2">増やす (+)</span>
+              <span className="rounded-full bg-green-700/50 px-2">
+                増やす (+)
+              </span>
             </button>
             <button
               type="button"
@@ -183,7 +221,9 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
               className="flex flex-col items-center justify-center gap-0.5 rounded-lg bg-blue-600 py-1.5 text-[10px] font-bold text-white shadow transition-colors hover:bg-blue-700 active:scale-95"
             >
               <span>結果で</span>
-              <span className="rounded-full bg-blue-800/50 px-2">上書き (=)</span>
+              <span className="rounded-full bg-blue-800/50 px-2">
+                上書き (=)
+              </span>
             </button>
           </div>
         </div>
@@ -203,7 +243,8 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
               <Minus className="h-4 w-4 text-red-600" />
             </button>
             <div className="text-xl font-bold text-gray-800">
-              {player.debtCount} <span className="text-xs font-normal text-gray-600">枚</span>
+              {player.debtCount}{" "}
+              <span className="text-xs font-normal text-gray-600">枚</span>
             </div>
             <button
               type="button"
@@ -257,7 +298,9 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
             >
               <Minus className="h-4 w-4 text-pink-600" />
             </button>
-            <div className="text-xl font-bold text-gray-800">{player.dopamine}</div>
+            <div className="text-xl font-bold text-gray-800">
+              {player.dopamine}
+            </div>
             <button
               type="button"
               onClick={() => updateDopamine(1)}
@@ -324,7 +367,9 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
           </div>
           <div className="text-right">
             <div className="text-xs font-bold text-blue-800">給料</div>
-            <div className="font-bold text-gray-800">{formatCurrency(player.salary)}</div>
+            <div className="font-bold text-gray-800">
+              {formatCurrency(player.salary)}
+            </div>
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 SHELL := /bin/zsh
 
 .DEFAULT_GOAL := dev
-.PHONY: dev init clean re
+.PHONY: dev init clean re format fromat
 
 node_modules: package.json
 	npm install
@@ -17,3 +17,8 @@ clean:
 re: clean
 	npm install
 	npm run dev
+
+format: node_modules
+	npm run format
+
+fromat: format

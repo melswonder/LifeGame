@@ -7,7 +7,7 @@ import {
   Route,
   Undo2,
 } from "lucide-react";
-import { buildBoardRouteSegments } from "../lib/boardBranches.js";
+import { buildBoardRouteSegments } from "../../../game/lib/boardBranches.js";
 import {
   BOARD_CANVAS,
   BOARD_FORESTS,
@@ -20,7 +20,7 @@ import {
   buildPolylinePath,
   getBoardLayout,
   SCENIC_TRAILS,
-} from "../lib/boardMap.js";
+} from "../../../game/lib/boardMap.js";
 
 const SPACE_COLOR_STYLES = {
   red: {

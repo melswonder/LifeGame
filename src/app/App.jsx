@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { ChevronRight, Settings } from "lucide-react";
-import BoardArea from "./components/BoardArea.jsx";
-import BoardSpaceModal from "./components/BoardSpaceModal.jsx";
-import BoardSpacePreviewModal from "./components/BoardSpacePreviewModal.jsx";
-import CircularRoulette from "./components/CircularRoulette.jsx";
-import PlayerStatus from "./components/PlayerStatus.jsx";
-import PlayerTabs from "./components/PlayerTabs.jsx";
-import SettingsModal from "./components/SettingsModal.jsx";
+import BoardArea from "../features/board/components/BoardArea.jsx";
+import BoardSpaceDetailsModal from "../features/board/components/BoardSpaceDetailsModal.jsx";
+import BoardSpaceEditorModal from "../features/board/components/BoardSpaceEditorModal.jsx";
+import RouletteWheel from "../features/control/components/RouletteWheel.jsx";
+import PlayerStatusPanel from "../features/player/components/PlayerStatusPanel.jsx";
+import PlayerTabs from "../features/player/components/PlayerTabs.jsx";
+import SettingsModal from "../features/settings/components/SettingsModal.jsx";
 import {
   applySpaceEffects,
   BOARD_COLOR_OPTIONS,
@@ -19,18 +19,18 @@ import {
   normalizeJobOptions,
   normalizeGameState,
   PLAYER_CONFIG,
-} from "./lib/gameState.js";
+} from "../game/lib/gameState.js";
 import {
   createBranchBetweenSpaces,
   normalizeBranches,
   removeBranchById,
-} from "./lib/boardBranches.js";
+} from "../game/lib/boardBranches.js";
 import {
   clearGameState,
   downloadGameState,
   loadGameState,
   saveGameState,
-} from "./lib/gameStorage.js";
+} from "../game/lib/gameStorage.js";
 
 export default function App() {
   const MIN_BOARD_SPACES = 20;
@@ -359,7 +359,7 @@ export default function App() {
 
       <div className="flex h-full w-[420px] min-w-[420px] flex-col gap-3 pb-4 pr-2">
         <div className="shrink-0">
-          <CircularRoulette onSpin={handleMove} />
+          <RouletteWheel onSpin={handleMove} />
         </div>
 
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md">
@@ -370,7 +370,7 @@ export default function App() {
           />
           <div className="flex-1 overflow-y-auto bg-gray-50/50">
             {currentPlayer && (
-              <PlayerStatus
+              <PlayerStatusPanel
                 player={currentPlayer}
                 onUpdatePlayer={handleUpdatePlayer}
               />
@@ -500,7 +500,7 @@ export default function App() {
         onResetState={handleResetState}
       />
 
-      <BoardSpaceModal
+      <BoardSpaceEditorModal
         isOpen={editingSpace !== null}
         space={editingSpace}
         colorOptions={BOARD_COLOR_OPTIONS}
@@ -511,7 +511,7 @@ export default function App() {
         }}
       />
 
-      <BoardSpacePreviewModal
+      <BoardSpaceDetailsModal
         isOpen={previewSpace !== null}
         space={previewSpace}
         onClose={handleCloseSpacePreview}

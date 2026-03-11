@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-export default function CircularRoulette({ onSpin }) {
+export default function RouletteWheel({ onSpin }) {
   const [rotation, setRotation] = useState(0);
   const [isSpinning, setIsSpinning] = useState(false);
   const [result, setResult] = useState(null);

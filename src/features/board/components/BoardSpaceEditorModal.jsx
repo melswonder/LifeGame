@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Palette, Save, X } from "lucide-react";
-import { clampBoardPoint } from "../lib/gameState.js";
+import { clampBoardPoint } from "../../../game/lib/gameState.js";
 
 const COLOR_BUTTON_STYLES = {
   red: "bg-red-500 border-red-700 text-white",
@@ -21,7 +21,7 @@ const SPACE_TYPE_OPTIONS = [
   { value: "goal", label: "ゴール" },
 ];
 
-export default function BoardSpaceModal({
+export default function BoardSpaceEditorModal({
   isOpen,
   space,
   colorOptions,

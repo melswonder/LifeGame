@@ -1,4 +1,4 @@
-import { normalizeGameState, serializeGameState } from "./gameState";
+import { normalizeGameState, serializeGameState } from "./gameState.js";
 
 export const GAME_STORAGE_KEY = "life-game-state-v1";
 

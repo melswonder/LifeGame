@@ -11,7 +11,7 @@ import {
   Plus,
   UserCircle,
 } from "lucide-react";
-import { formatCurrency } from "../lib/gameState.js";
+import { formatCurrency } from "../../../game/lib/gameState.js";
 
 const evaluateExpression = (expression) => {
   if (!/^[0-9+\-*/.]*$/.test(expression)) {
@@ -25,7 +25,7 @@ const evaluateExpression = (expression) => {
   }
 };
 
-export default function PlayerStatus({ player, onUpdatePlayer }) {
+export default function PlayerStatusPanel({ player, onUpdatePlayer }) {
   const [calcInput, setCalcInput] = useState("");
 
   useEffect(() => {

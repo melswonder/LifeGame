@@ -15,7 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { formatCurrency } from "../lib/gameState.js";
+import { formatCurrency } from "../../../game/lib/gameState.js";
 
 const SETTING_SECTIONS = [
   { id: "general", label: "一般", icon: SlidersHorizontal },

@@ -19,7 +19,7 @@ const COLOR_STYLES = {
   white: "border-gray-300 bg-white text-gray-800",
 };
 
-export default function BoardSpacePreviewModal({ isOpen, space, onClose }) {
+export default function BoardSpaceDetailsModal({ isOpen, space, onClose }) {
   if (!isOpen || !space) {
     return null;
   }

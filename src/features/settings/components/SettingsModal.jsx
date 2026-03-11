@@ -246,7 +246,7 @@ export default function SettingsModal({
         <div className="space-y-3">
           {jobOptions.map((job, index) => (
             <div
-              key={`${job.name}-${index}`}
+              key={`job-option-${index}`}
               className="grid grid-cols-1 gap-2 rounded-xl border border-gray-200 bg-white p-3 md:grid-cols-[1fr_180px_auto]"
             >
               <input

@@ -1,0 +1,9 @@
+[
+  { "name": "無職", "salary": 0 },
+  { "name": "フリーター", "salary": 5000 },
+  { "name": "YouTuber", "salary": 15000 },
+  { "name": "会社員", "salary": 20000 },
+  { "name": "エンジニア", "salary": 25000 },
+  { "name": "医者", "salary": 50000 },
+  { "name": "投資家", "salary": 80000 }
+]

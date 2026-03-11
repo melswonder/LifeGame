@@ -450,10 +450,7 @@ export default function SettingsModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
       <div className="flex h-[90vh] w-full max-w-6xl overflow-hidden rounded-3xl bg-white shadow-2xl">
         <div className="flex w-[240px] shrink-0 flex-col border-r border-gray-200 bg-gray-950 text-white">
-          <div className="flex items-center justify-between border-b border-white/10 p-5">
-            <h3 className="flex items-center gap-2 font-bold">
-              <Settings className="h-5 w-5" /> システム設定
-            </h3>
+          <div className="flex items-center gap-3 border-b border-white/10 p-5">
             <button
               type="button"
               onClick={onClose}
@@ -461,6 +458,9 @@ export default function SettingsModal({
             >
               <X className="h-5 w-5" />
             </button>
+            <h3 className="flex items-center gap-2 font-bold">
+              システム設定
+            </h3>
           </div>
 
           <div className="flex-1 space-y-2 p-4">

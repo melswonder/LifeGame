@@ -14,10 +14,12 @@ import {
   createInitialGameState,
   createPlayer,
   DEFAULT_JOB_OPTIONS,
+  DEFAULT_SPACE_TYPE_OPTIONS,
   findBlockingPurpleSpace,
   normalizeBoard,
   normalizeJobOptions,
   normalizeGameState,
+  normalizeSpaceTypeOptions,
   PLAYER_CONFIG,
 } from "../game/lib/gameState.js";
 import {
@@ -47,6 +49,11 @@ export default function App() {
   const [jobOptions, setJobOptions] = useState(
     normalizeJobOptions(initialState.jobOptions ?? DEFAULT_JOB_OPTIONS),
   );
+  const [spaceTypeOptions, setSpaceTypeOptions] = useState(
+    normalizeSpaceTypeOptions(
+      initialState.spaceTypeOptions ?? DEFAULT_SPACE_TYPE_OPTIONS,
+    ),
+  );
   const [players, setPlayers] = useState(initialState.players);
   const [currentPlayerIndex, setCurrentPlayerIndex] = useState(
     initialState.currentPlayerIndex,
@@ -64,6 +71,7 @@ export default function App() {
       branches,
       backgroundImageUrl,
       jobOptions,
+      spaceTypeOptions,
       players,
       currentPlayerIndex,
       isEditing,
@@ -73,6 +81,7 @@ export default function App() {
     branches,
     backgroundImageUrl,
     jobOptions,
+    spaceTypeOptions,
     players,
     currentPlayerIndex,
     isEditing,
@@ -214,6 +223,7 @@ export default function App() {
         { length: boundedCount },
         (_, index) => board[index] ?? { id: index },
       ),
+      spaceTypeOptions,
     );
     const nextBranches = normalizeBranches(branches, boundedCount);
 
@@ -292,6 +302,7 @@ export default function App() {
       branches,
       backgroundImageUrl,
       jobOptions,
+      spaceTypeOptions,
       players,
       currentPlayerIndex,
       isEditing,
@@ -306,6 +317,7 @@ export default function App() {
       setBranches(nextState.branches);
       setBackgroundImageUrl(nextState.backgroundImageUrl);
       setJobOptions(nextState.jobOptions);
+      setSpaceTypeOptions(nextState.spaceTypeOptions);
       setPlayers(nextState.players);
       setCurrentPlayerIndex(nextState.currentPlayerIndex);
       setIsEditing(nextState.isEditing);
@@ -328,6 +340,7 @@ export default function App() {
     setBranches(nextState.branches);
     setBackgroundImageUrl(nextState.backgroundImageUrl);
     setJobOptions(nextState.jobOptions);
+    setSpaceTypeOptions(nextState.spaceTypeOptions);
     setPlayers(nextState.players);
     setCurrentPlayerIndex(nextState.currentPlayerIndex);
     setIsEditing(nextState.isEditing);
@@ -410,6 +423,8 @@ export default function App() {
         onUpdatePlayer={handleUpdatePlayer}
         onChangePlayerCount={handleChangePlayerCount}
         onChangeBoardCount={handleChangeBoardCount}
+        spaceTypeOptions={spaceTypeOptions}
+        colorOptions={BOARD_COLOR_OPTIONS}
         backgroundImageUrl={backgroundImageUrl}
         onUpdateBackgroundImage={setBackgroundImageUrl}
         onClearBackgroundImage={() => setBackgroundImageUrl(null)}
@@ -495,6 +510,97 @@ export default function App() {
             ),
           );
         }}
+        onAddSpaceType={() => {
+          setSpaceTypeOptions((previous) => {
+            const nextIndex = previous.length + 1;
+            const baseValue = `custom-type-${nextIndex}`;
+            let value = baseValue;
+            let suffix = nextIndex;
+
+            while (previous.some((spaceType) => spaceType.value === value)) {
+              suffix += 1;
+              value = `custom-type-${suffix}`;
+            }
+
+            return [
+              ...previous,
+              {
+                value,
+                label: `新しい種類 ${nextIndex}`,
+                defaultColor: "blue",
+              },
+            ];
+          });
+        }}
+        onUpdateSpaceType={(index, updates) => {
+          const currentSpaceType = spaceTypeOptions[index];
+          if (!currentSpaceType) {
+            return;
+          }
+
+          const nextLabel =
+            typeof updates.label === "string" && updates.label.trim()
+              ? updates.label.trim()
+              : currentSpaceType.label;
+          const nextDefaultColor = BOARD_COLOR_OPTIONS.some(
+            (option) => option.value === updates.defaultColor,
+          )
+            ? updates.defaultColor
+            : currentSpaceType.defaultColor;
+
+          const nextSpaceType = {
+            ...currentSpaceType,
+            label: nextLabel,
+            defaultColor: nextDefaultColor,
+          };
+          const nextSpaceTypeOptions = spaceTypeOptions.map(
+            (spaceType, spaceTypeIndex) =>
+              spaceTypeIndex === index ? nextSpaceType : spaceType,
+          );
+
+          setSpaceTypeOptions(nextSpaceTypeOptions);
+          if (nextDefaultColor !== currentSpaceType.defaultColor) {
+            setBoard((previous) =>
+              previous.map((space) =>
+                space.type === currentSpaceType.value
+                  ? { ...space, color: nextDefaultColor }
+                  : space,
+              ),
+            );
+          }
+        }}
+        onRemoveSpaceType={(index) => {
+          if (spaceTypeOptions.length <= 1) {
+            window.alert("マスの種類は最低1つ必要です。");
+            return;
+          }
+
+          const removedSpaceType = spaceTypeOptions[index];
+          if (!removedSpaceType) {
+            return;
+          }
+
+          const nextSpaceTypeOptions = spaceTypeOptions.filter(
+            (_, spaceTypeIndex) => spaceTypeIndex !== index,
+          );
+          const fallbackSpaceType =
+            nextSpaceTypeOptions.find(
+              (spaceType) => spaceType.value === "normal",
+            ) ?? nextSpaceTypeOptions[0];
+
+          setSpaceTypeOptions(nextSpaceTypeOptions);
+          setBoard((previous) =>
+            previous.map((space) =>
+              space.type === removedSpaceType.value
+                ? {
+                    ...space,
+                    type: fallbackSpaceType.value,
+                    color: fallbackSpaceType.defaultColor,
+                  }
+                : space,
+            ),
+          );
+        }}
         onExportState={handleExportState}
         onImportState={handleImportState}
         onResetState={handleResetState}
@@ -504,6 +610,7 @@ export default function App() {
         isOpen={editingSpace !== null}
         space={editingSpace}
         colorOptions={BOARD_COLOR_OPTIONS}
+        spaceTypeOptions={spaceTypeOptions}
         onClose={handleCloseSpaceEditor}
         onSave={(nextSpace) => {
           handleUpdateSpace(nextSpace.id, nextSpace);
@@ -514,6 +621,7 @@ export default function App() {
       <BoardSpaceDetailsModal
         isOpen={previewSpace !== null}
         space={previewSpace}
+        spaceTypeOptions={spaceTypeOptions}
         onClose={handleCloseSpacePreview}
       />
     </div>

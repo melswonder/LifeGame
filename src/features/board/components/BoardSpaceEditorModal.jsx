@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Palette, Save, X } from "lucide-react";
 import { clampBoardPoint } from "../../../game/lib/gameState.js";
 
@@ -11,20 +11,11 @@ const COLOR_BUTTON_STYLES = {
   white: "bg-white border-gray-300 text-gray-800",
 };
 
-const SPACE_TYPE_OPTIONS = [
-  { value: "start", label: "スタート" },
-  { value: "normal", label: "通常" },
-  { value: "lucky", label: "ラッキー" },
-  { value: "danger", label: "ピンチ" },
-  { value: "payday", label: "給料日" },
-  { value: "stop", label: "停止" },
-  { value: "goal", label: "ゴール" },
-];
-
 export default function BoardSpaceEditorModal({
   isOpen,
   space,
   colorOptions,
+  spaceTypeOptions,
   onClose,
   onSave,
 }) {
@@ -51,6 +42,17 @@ export default function BoardSpaceEditorModal({
     setX(Math.round(space.x ?? 0));
     setY(Math.round(space.y ?? 0));
   }, [space]);
+
+  const availableSpaceTypes = useMemo(() => {
+    if (Array.isArray(spaceTypeOptions) && spaceTypeOptions.length > 0) {
+      return spaceTypeOptions;
+    }
+
+    return [
+      { value: "start", label: "スタート", defaultColor: "blue" },
+      { value: "normal", label: "通常", defaultColor: "blue" },
+    ];
+  }, [spaceTypeOptions]);
 
   if (!isOpen || !space) {
     return null;
@@ -95,10 +97,20 @@ export default function BoardSpaceEditorModal({
             </label>
             <select
               value={type}
-              onChange={(event) => setType(event.target.value)}
+              onChange={(event) => {
+                const nextType = event.target.value;
+                const matchingType = availableSpaceTypes.find(
+                  (spaceType) => spaceType.value === nextType,
+                );
+
+                setType(nextType);
+                if (matchingType?.defaultColor) {
+                  setColor(matchingType.defaultColor);
+                }
+              }}
               className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              {SPACE_TYPE_OPTIONS.map((option) => (
+              {availableSpaceTypes.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
                 </option>
@@ -123,47 +135,6 @@ export default function BoardSpaceEditorModal({
                   {option.label}
                 </button>
               ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="mb-2 text-sm font-bold text-gray-800">効果設定</div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-1 text-xs font-bold text-gray-500">
-                  所持金変化
-                </div>
-                <input
-                  type="number"
-                  value={money}
-                  onChange={(event) => setMoney(Number(event.target.value))}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </label>
-              <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-1 text-xs font-bold text-gray-500">
-                  同乗者増減
-                </div>
-                <input
-                  type="number"
-                  value={addCarPeople}
-                  onChange={(event) =>
-                    setAddCarPeople(Number(event.target.value))
-                  }
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </label>
-              <label className="rounded-xl border border-gray-200 bg-gray-50 p-3">
-                <div className="mb-1 text-xs font-bold text-gray-500">
-                  借金増減
-                </div>
-                <input
-                  type="number"
-                  value={addDebt}
-                  onChange={(event) => setAddDebt(Number(event.target.value))}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </label>
             </div>
           </div>
 

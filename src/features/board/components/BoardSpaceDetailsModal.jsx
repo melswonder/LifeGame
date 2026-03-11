@@ -1,15 +1,5 @@
 import { Sparkles, X } from "lucide-react";
 
-const TYPE_LABELS = {
-  start: "スタート",
-  normal: "通常",
-  lucky: "ラッキー",
-  danger: "ピンチ",
-  payday: "給料日",
-  stop: "停止",
-  goal: "ゴール",
-};
-
 const COLOR_STYLES = {
   red: "border-red-700 bg-red-500 text-white",
   blue: "border-blue-700 bg-blue-500 text-white",
@@ -19,12 +9,22 @@ const COLOR_STYLES = {
   white: "border-gray-300 bg-white text-gray-800",
 };
 
-export default function BoardSpaceDetailsModal({ isOpen, space, onClose }) {
+export default function BoardSpaceDetailsModal({
+  isOpen,
+  space,
+  spaceTypeOptions,
+  onClose,
+}) {
   if (!isOpen || !space) {
     return null;
   }
 
   const colorStyle = COLOR_STYLES[space.color] ?? COLOR_STYLES.blue;
+  const typeLabel =
+    spaceTypeOptions?.find((spaceType) => spaceType.value === space.type)
+      ?.label ??
+    space.type ??
+    "通常";
 
   return (
     <div
@@ -50,7 +50,7 @@ export default function BoardSpaceDetailsModal({ isOpen, space, onClose }) {
                   マス {space.id}
                 </div>
                 <div className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold text-gray-100">
-                  {TYPE_LABELS[space.type] ?? "通常"}
+                  {typeLabel}
                 </div>
               </div>
               <div className="flex items-center gap-2 text-sm font-bold text-amber-200">

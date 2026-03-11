@@ -35,10 +35,15 @@ export default function SettingsModal({
   boardCount,
   minBoardSpaces,
   maxBoardSpaces,
+  spaceTypeOptions,
+  colorOptions,
   backgroundImageUrl,
   onUpdatePlayer,
   onChangePlayerCount,
   onChangeBoardCount,
+  onAddSpaceType,
+  onUpdateSpaceType,
+  onRemoveSpaceType,
   onUpdateBackgroundImage,
   onClearBackgroundImage,
   onAddJobOption,
@@ -184,6 +189,60 @@ export default function SettingsModal({
             )}
           </select>
         </div>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+        <div className="mb-3 text-sm font-black text-gray-900">
+          マス種類の管理
+        </div>
+        <div className="mb-3 text-xs text-gray-500">
+          マスの種類を追加でき、表示名とデフォルト色を変更できます。
+        </div>
+        <div className="space-y-3">
+          {spaceTypeOptions.map((spaceType, index) => (
+            <div
+              key={`space-type-${index}`}
+              className="grid grid-cols-1 gap-2 rounded-xl border border-gray-200 bg-white p-3 md:grid-cols-[1fr_180px_auto]"
+            >
+              <input
+                type="text"
+                value={spaceType.label}
+                onChange={(event) =>
+                  onUpdateSpaceType(index, { label: event.target.value })
+                }
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="種類名"
+              />
+              <select
+                value={spaceType.defaultColor}
+                onChange={(event) =>
+                  onUpdateSpaceType(index, { defaultColor: event.target.value })
+                }
+                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {colorOptions.map((colorOption) => (
+                  <option key={colorOption.value} value={colorOption.value}>
+                    {colorOption.label}
+                  </option>
+                ))}
+              </select>
+              <button
+                type="button"
+                onClick={() => onRemoveSpaceType(index)}
+                className="flex items-center justify-center gap-2 rounded-lg bg-gray-200 px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-300"
+              >
+                <Trash2 className="h-4 w-4" /> 削除
+              </button>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={onAddSpaceType}
+          className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-bold text-white hover:bg-gray-800"
+        >
+          <Plus className="h-4 w-4" /> マス種類を追加
+        </button>
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">

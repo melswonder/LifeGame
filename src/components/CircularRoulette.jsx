@@ -54,18 +54,23 @@ export default function CircularRoulette({ onSpin }) {
         <div className="absolute left-1/2 top-0 z-20 h-0 w-0 -translate-x-1/2 -translate-y-1 border-l-[10px] border-r-[10px] border-t-[20px] border-l-transparent border-r-transparent border-t-red-600 drop-shadow-md" />
 
         <div
-          className="relative h-full w-full overflow-hidden rounded-full border-8 border-gray-800 shadow-inner"
+          className={`relative h-full w-full overflow-hidden rounded-full border-8 border-gray-800 shadow-inner [background:conic-gradient(var(--roulette-gradient))] [transform:rotate(var(--roulette-rotation))] ${
+            isSpinning
+              ? "transition-[transform] duration-[3000ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
+              : "transition-none"
+          }`}
           style={{
-            background: `conic-gradient(${conicGradient})`,
-            transform: `rotate(${rotation}deg)`,
-            transition: isSpinning ? "transform 3s cubic-bezier(0.25, 0.1, 0.25, 1)" : "none",
+            "--roulette-gradient": conicGradient,
+            "--roulette-rotation": `${rotation}deg`,
           }}
         >
           {numbers.map((number, index) => (
             <div
               key={number}
-              className="pointer-events-none absolute left-0 top-0 flex h-full w-full justify-center"
-              style={{ transform: `rotate(${index * sliceAngle + sliceAngle / 2}deg)` }}
+              className="pointer-events-none absolute left-0 top-0 flex h-full w-full justify-center [transform:rotate(var(--slice-rotation))]"
+              style={{
+                "--slice-rotation": `${index * sliceAngle + sliceAngle / 2}deg`,
+              }}
             >
               <span className="mt-3 text-2xl font-black text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]">
                 {number}

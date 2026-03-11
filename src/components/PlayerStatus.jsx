@@ -7,6 +7,7 @@ import {
   Flame,
   Gem,
   Minus,
+  PauseCircle,
   Plus,
   UserCircle,
 } from "lucide-react";
@@ -41,6 +42,9 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
 
   const updateDopamine = (amount) =>
     onUpdatePlayer(player.id, { dopamine: Math.max(0, player.dopamine + amount) });
+
+  const toggleSkippingTurn = () =>
+    onUpdatePlayer(player.id, { isSkippingTurn: !player.isSkippingTurn });
 
   const toggleCard = (cardName) => {
     const hasCard = player.cards.includes(cardName);
@@ -292,6 +296,23 @@ export default function PlayerStatus({ player, onUpdatePlayer }) {
               情弱カード
             </button>
           </div>
+        </div>
+
+        <div className="col-span-2 rounded-lg border border-amber-200 bg-amber-50 p-3">
+          <div className="mb-2 flex items-center gap-1 text-xs font-bold text-amber-800">
+            <PauseCircle className="h-4 w-4" /> 一回休み
+          </div>
+          <button
+            type="button"
+            onClick={toggleSkippingTurn}
+            className={`w-full rounded-lg border px-3 py-2 text-sm font-bold shadow-sm transition-colors ${
+              player.isSkippingTurn
+                ? "border-amber-700 bg-amber-500 text-white hover:bg-amber-600"
+                : "border-gray-300 bg-white text-gray-600 hover:bg-gray-100"
+            }`}
+          >
+            {player.isSkippingTurn ? "一回休み中" : "通常状態"}
+          </button>
         </div>
 
         <div className="col-span-2 flex items-center justify-between rounded-lg border border-blue-200 bg-blue-50 p-3">

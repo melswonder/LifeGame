@@ -117,6 +117,7 @@ export const createPlayer = (index, overrides = {}) => {
     treasures: Array.isArray(overrides.treasures) ? overrides.treasures : [],
     cards: Array.isArray(overrides.cards) ? overrides.cards : [],
     dopamine: Math.max(0, getNumber(overrides.dopamine, 0)),
+    isSkippingTurn: Boolean(overrides.isSkippingTurn),
   };
 };
 

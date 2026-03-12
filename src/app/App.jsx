@@ -9,14 +9,15 @@ import PlayerTabs from "../features/player/components/PlayerTabs.jsx";
 import SettingsModal from "../features/settings/components/SettingsModal.jsx";
 import {
   applySpaceEffects,
-  BOARD_COLOR_OPTIONS,
   clampBoardPoint,
   createInitialGameState,
   createPlayer,
+  DEFAULT_BOARD_COLOR_OPTIONS,
   DEFAULT_JOB_OPTIONS,
   DEFAULT_SPACE_TYPE_OPTIONS,
   findBlockingPurpleSpace,
   normalizeBoard,
+  normalizeBoardColorOptions,
   normalizeJobOptions,
   normalizeGameState,
   normalizeSpaceTypeOptions,
@@ -49,9 +50,15 @@ export default function App() {
   const [jobOptions, setJobOptions] = useState(
     normalizeJobOptions(initialState.jobOptions ?? DEFAULT_JOB_OPTIONS),
   );
+  const [boardColorOptions, setBoardColorOptions] = useState(
+    normalizeBoardColorOptions(
+      initialState.boardColorOptions ?? DEFAULT_BOARD_COLOR_OPTIONS,
+    ),
+  );
   const [spaceTypeOptions, setSpaceTypeOptions] = useState(
     normalizeSpaceTypeOptions(
       initialState.spaceTypeOptions ?? DEFAULT_SPACE_TYPE_OPTIONS,
+      initialState.boardColorOptions ?? DEFAULT_BOARD_COLOR_OPTIONS,
     ),
   );
   const [players, setPlayers] = useState(initialState.players);
@@ -71,6 +78,7 @@ export default function App() {
       branches,
       backgroundImageUrl,
       jobOptions,
+      boardColorOptions,
       spaceTypeOptions,
       players,
       currentPlayerIndex,
@@ -81,6 +89,7 @@ export default function App() {
     branches,
     backgroundImageUrl,
     jobOptions,
+    boardColorOptions,
     spaceTypeOptions,
     players,
     currentPlayerIndex,
@@ -224,6 +233,7 @@ export default function App() {
         (_, index) => board[index] ?? { id: index },
       ),
       spaceTypeOptions,
+      boardColorOptions,
     );
     const nextBranches = normalizeBranches(branches, boundedCount);
 
@@ -302,6 +312,7 @@ export default function App() {
       branches,
       backgroundImageUrl,
       jobOptions,
+      boardColorOptions,
       spaceTypeOptions,
       players,
       currentPlayerIndex,
@@ -317,6 +328,7 @@ export default function App() {
       setBranches(nextState.branches);
       setBackgroundImageUrl(nextState.backgroundImageUrl);
       setJobOptions(nextState.jobOptions);
+      setBoardColorOptions(nextState.boardColorOptions);
       setSpaceTypeOptions(nextState.spaceTypeOptions);
       setPlayers(nextState.players);
       setCurrentPlayerIndex(nextState.currentPlayerIndex);
@@ -340,6 +352,7 @@ export default function App() {
     setBranches(nextState.branches);
     setBackgroundImageUrl(nextState.backgroundImageUrl);
     setJobOptions(nextState.jobOptions);
+    setBoardColorOptions(nextState.boardColorOptions);
     setSpaceTypeOptions(nextState.spaceTypeOptions);
     setPlayers(nextState.players);
     setCurrentPlayerIndex(nextState.currentPlayerIndex);
@@ -357,6 +370,7 @@ export default function App() {
           board={board}
           branches={branches}
           backgroundImageUrl={backgroundImageUrl}
+          colorOptions={boardColorOptions}
           players={players}
           isEditing={isEditing}
           mapEditTool={mapEditTool}
@@ -424,10 +438,89 @@ export default function App() {
         onChangePlayerCount={handleChangePlayerCount}
         onChangeBoardCount={handleChangeBoardCount}
         spaceTypeOptions={spaceTypeOptions}
-        colorOptions={BOARD_COLOR_OPTIONS}
+        colorOptions={boardColorOptions}
         backgroundImageUrl={backgroundImageUrl}
         onUpdateBackgroundImage={setBackgroundImageUrl}
         onClearBackgroundImage={() => setBackgroundImageUrl(null)}
+        onAddBoardColor={() => {
+          setBoardColorOptions((previous) => {
+            const nextIndex = previous.length + 1;
+            let value = `custom-color-${nextIndex}`;
+            let suffix = nextIndex;
+
+            while (
+              previous.some((colorOption) => colorOption.value === value)
+            ) {
+              suffix += 1;
+              value = `custom-color-${suffix}`;
+            }
+
+            return [
+              ...previous,
+              {
+                value,
+                label: `追加色 ${nextIndex}`,
+                fill: "#94a3b8",
+                isCustom: true,
+              },
+            ];
+          });
+        }}
+        onUpdateBoardColor={(index, updates) => {
+          const currentColor = boardColorOptions[index];
+          if (!currentColor) {
+            return;
+          }
+
+          const nextColor = {
+            ...currentColor,
+            label:
+              typeof updates.label === "string" && updates.label.trim()
+                ? updates.label.trim()
+                : currentColor.label,
+            fill:
+              typeof updates.fill === "string" && updates.fill.trim()
+                ? updates.fill.trim()
+                : currentColor.fill,
+          };
+
+          setBoardColorOptions((previous) =>
+            previous.map((colorOption, colorIndex) =>
+              colorIndex === index ? nextColor : colorOption,
+            ),
+          );
+        }}
+        onRemoveBoardColor={(index) => {
+          const removedColor = boardColorOptions[index];
+          if (!removedColor?.isCustom) {
+            window.alert("標準色は削除できません。");
+            return;
+          }
+
+          const fallbackColor =
+            boardColorOptions.find(
+              (colorOption) => colorOption.value === "blue",
+            ) ?? boardColorOptions[0];
+          const nextBoardColorOptions = boardColorOptions.filter(
+            (_, colorIndex) => colorIndex !== index,
+          );
+
+          setBoardColorOptions(nextBoardColorOptions);
+          setSpaceTypeOptions((previous) =>
+            previous.map((spaceType) =>
+              spaceType.defaultColor === removedColor.value
+                ? { ...spaceType, defaultColor: fallbackColor.value }
+                : spaceType,
+            ),
+          );
+          setBoard((previous) =>
+            previous.map((space) =>
+              space.color === removedColor.value
+                ? { ...space, color: fallbackColor.value }
+                : space,
+            ),
+          );
+        }}
         onAddJobOption={() => {
           setJobOptions((previous) => {
             const nextIndex = previous.length + 1;
@@ -527,7 +620,8 @@ export default function App() {
               {
                 value,
                 label: `新しい種類 ${nextIndex}`,
-                defaultColor: "blue",
+                defaultColor: boardColorOptions[0]?.value ?? "blue",
+                isCustom: true,
               },
             ];
           });
@@ -542,7 +636,7 @@ export default function App() {
             typeof updates.label === "string" && updates.label.trim()
               ? updates.label.trim()
               : currentSpaceType.label;
-          const nextDefaultColor = BOARD_COLOR_OPTIONS.some(
+          const nextDefaultColor = boardColorOptions.some(
             (option) => option.value === updates.defaultColor,
           )
             ? updates.defaultColor
@@ -570,13 +664,18 @@ export default function App() {
           }
         }}
         onRemoveSpaceType={(index) => {
-          if (spaceTypeOptions.length <= 1) {
-            window.alert("マスの種類は最低1つ必要です。");
+          const removedSpaceType = spaceTypeOptions[index];
+          if (!removedSpaceType) {
             return;
           }
 
-          const removedSpaceType = spaceTypeOptions[index];
-          if (!removedSpaceType) {
+          if (!removedSpaceType.isCustom) {
+            window.alert("標準のマス種類は削除できません。");
+            return;
+          }
+
+          if (spaceTypeOptions.length <= 1) {
+            window.alert("マスの種類は最低1つ必要です。");
             return;
           }
 
@@ -609,8 +708,7 @@ export default function App() {
       <BoardSpaceEditorModal
         isOpen={editingSpace !== null}
         space={editingSpace}
-        colorOptions={BOARD_COLOR_OPTIONS}
-        spaceTypeOptions={spaceTypeOptions}
+        colorOptions={boardColorOptions}
         onClose={handleCloseSpaceEditor}
         onSave={(nextSpace) => {
           handleUpdateSpace(nextSpace.id, nextSpace);
@@ -621,6 +719,7 @@ export default function App() {
       <BoardSpaceDetailsModal
         isOpen={previewSpace !== null}
         space={previewSpace}
+        colorOptions={boardColorOptions}
         spaceTypeOptions={spaceTypeOptions}
         onClose={handleCloseSpacePreview}
       />

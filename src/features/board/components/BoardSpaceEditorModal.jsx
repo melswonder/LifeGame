@@ -1,27 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { Palette, Save, X } from "lucide-react";
-import { clampBoardPoint } from "../../../game/lib/gameState.js";
-
-const COLOR_BUTTON_STYLES = {
-  red: "bg-red-500 border-red-700 text-white",
-  blue: "bg-blue-500 border-blue-700 text-white",
-  green: "bg-green-400 border-green-600 text-green-950",
-  purple: "bg-purple-600 border-purple-800 text-white",
-  orange: "bg-orange-400 border-orange-600 text-orange-950",
-  white: "bg-white border-gray-300 text-gray-800",
-};
+import {
+  clampBoardPoint,
+  getBoardColorTheme,
+} from "../../../game/lib/gameState.js";
 
 export default function BoardSpaceEditorModal({
   isOpen,
   space,
   colorOptions,
-  spaceTypeOptions,
   onClose,
   onSave,
 }) {
   const [text, setText] = useState("");
   const [color, setColor] = useState("blue");
-  const [type, setType] = useState("normal");
   const [money, setMoney] = useState(0);
   const [addCarPeople, setAddCarPeople] = useState(0);
   const [addDebt, setAddDebt] = useState(0);
@@ -35,24 +27,12 @@ export default function BoardSpaceEditorModal({
 
     setText(space.text ?? "");
     setColor(space.color ?? "blue");
-    setType(space.type ?? "normal");
     setMoney(space.money ?? 0);
     setAddCarPeople(space.addCarPeople ?? 0);
     setAddDebt(space.addDebt ?? 0);
     setX(Math.round(space.x ?? 0));
     setY(Math.round(space.y ?? 0));
   }, [space]);
-
-  const availableSpaceTypes = useMemo(() => {
-    if (Array.isArray(spaceTypeOptions) && spaceTypeOptions.length > 0) {
-      return spaceTypeOptions;
-    }
-
-    return [
-      { value: "start", label: "スタート", defaultColor: "blue" },
-      { value: "normal", label: "通常", defaultColor: "blue" },
-    ];
-  }, [spaceTypeOptions]);
 
   if (!isOpen || !space) {
     return null;
@@ -92,49 +72,36 @@ export default function BoardSpaceEditorModal({
           </div>
 
           <div>
-            <label className="mb-2 block text-sm font-bold text-gray-800">
-              マスの種類
-            </label>
-            <select
-              value={type}
-              onChange={(event) => {
-                const nextType = event.target.value;
-                const matchingType = availableSpaceTypes.find(
-                  (spaceType) => spaceType.value === nextType,
-                );
-
-                setType(nextType);
-                if (matchingType?.defaultColor) {
-                  setColor(matchingType.defaultColor);
-                }
-              }}
-              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              {availableSpaceTypes.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
             <div className="mb-2 flex items-center gap-2 text-sm font-bold text-gray-800">
               <Palette className="h-4 w-4" /> マスの色
             </div>
-            <div className="grid grid-cols-2 gap-2">
-              {colorOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => setColor(option.value)}
-                  className={`rounded-xl border-2 px-3 py-3 text-sm font-bold shadow-sm transition-all ${
-                    COLOR_BUTTON_STYLES[option.value]
-                  } ${color === option.value ? "ring-4 ring-offset-2 ring-gray-300" : "opacity-80 hover:opacity-100"}`}
-                >
-                  {option.label}
-                </button>
-              ))}
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {colorOptions.map((option) => {
+                const colorTheme = getBoardColorTheme(
+                  option.value,
+                  colorOptions,
+                );
+
+                return (
+                  <button
+                    key={option.value}
+                    type="button"
+                    onClick={() => setColor(option.value)}
+                    className={`rounded-xl border-2 px-3 py-3 text-sm font-bold shadow-sm transition-all ${
+                      color === option.value
+                        ? "ring-4 ring-offset-2 ring-gray-300"
+                        : "opacity-85 hover:opacity-100"
+                    }`}
+                    style={{
+                      backgroundColor: colorTheme.fillColor,
+                      borderColor: colorTheme.borderColor,
+                      color: colorTheme.textColor,
+                    }}
+                  >
+                    {option.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -188,7 +155,6 @@ export default function BoardSpaceEditorModal({
                   ...space,
                   text,
                   color,
-                  type,
                   money,
                   addCarPeople,
                   addDebt,

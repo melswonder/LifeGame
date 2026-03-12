@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  Palette,
   Briefcase,
   Download,
   FileJson,
@@ -15,7 +16,10 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { formatCurrency } from "../../../game/lib/gameState.js";
+import {
+  formatCurrency,
+  getBoardColorTheme,
+} from "../../../game/lib/gameState.js";
 
 const SETTING_SECTIONS = [
   { id: "general", label: "一般", icon: SlidersHorizontal },
@@ -41,6 +45,9 @@ export default function SettingsModal({
   onUpdatePlayer,
   onChangePlayerCount,
   onChangeBoardCount,
+  onAddBoardColor,
+  onUpdateBoardColor,
+  onRemoveBoardColor,
   onAddSpaceType,
   onUpdateSpaceType,
   onRemoveSpaceType,
@@ -104,7 +111,7 @@ export default function SettingsModal({
           <div className="min-w-0 flex-1">
             <div className="font-bold text-gray-800">マップ編集モード</div>
             <div className="mt-1 text-xs text-gray-500">
-              盤面のマス移動、効果編集、分岐作成を切り替えます。
+              盤面のマス移動、内容編集、分岐作成を切り替えます。
             </div>
           </div>
           <button
@@ -192,47 +199,131 @@ export default function SettingsModal({
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-        <div className="mb-3 text-sm font-black text-gray-900">
+        <div className="mb-3 flex items-center gap-2 text-sm font-black text-gray-900">
+          <Palette className="h-5 w-5" /> マス色の管理
+        </div>
+        <div className="mb-3 text-xs text-gray-500">
+          マス編集で選べる色を追加できます。標準色は残したまま、追加色だけ削除できます。
+        </div>
+        <div className="space-y-3">
+          {colorOptions.map((colorOption, index) => (
+            <div
+              key={`board-color-${colorOption.value}`}
+              className="grid grid-cols-1 gap-2 rounded-xl border border-gray-200 bg-white p-3 md:grid-cols-[1fr_120px_auto]"
+            >
+              <input
+                type="text"
+                value={colorOption.label}
+                onChange={(event) =>
+                  onUpdateBoardColor(index, { label: event.target.value })
+                }
+                className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="色名"
+              />
+              <label className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-2">
+                <input
+                  type="color"
+                  value={colorOption.fill}
+                  onChange={(event) =>
+                    onUpdateBoardColor(index, { fill: event.target.value })
+                  }
+                  className="h-8 w-10 cursor-pointer rounded border-0 bg-transparent p-0"
+                />
+                <span className="text-xs font-bold text-gray-600">
+                  {colorOption.fill}
+                </span>
+              </label>
+              <button
+                type="button"
+                onClick={() => onRemoveBoardColor(index)}
+                disabled={!colorOption.isCustom}
+                className="flex items-center justify-center gap-2 rounded-lg bg-gray-200 px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <Trash2 className="h-4 w-4" /> 削除
+              </button>
+            </div>
+          ))}
+        </div>
+        <button
+          type="button"
+          onClick={onAddBoardColor}
+          className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-bold text-white hover:bg-gray-800"
+        >
+          <Plus className="h-4 w-4" /> マス色を追加
+        </button>
+      </div>
+
+      <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
+        <div className="mb-3 flex items-center gap-2 text-sm font-black text-gray-900">
+          <Settings className="h-5 w-5" />
           マス種類の管理
         </div>
         <div className="mb-3 text-xs text-gray-500">
-          マスの種類を追加でき、表示名とデフォルト色を変更できます。
+          マス色と同じように、種類を追加できます。標準種類は残したまま、追加種類だけ削除できます。
         </div>
         <div className="space-y-3">
           {spaceTypeOptions.map((spaceType, index) => (
             <div
-              key={`space-type-${index}`}
-              className="grid grid-cols-1 gap-2 rounded-xl border border-gray-200 bg-white p-3 md:grid-cols-[1fr_180px_auto]"
+              key={`space-type-${spaceType.value}`}
+              className="space-y-3 rounded-xl border border-gray-200 bg-white p-3"
             >
-              <input
-                type="text"
-                value={spaceType.label}
-                onChange={(event) =>
-                  onUpdateSpaceType(index, { label: event.target.value })
-                }
-                className="rounded-lg border border-gray-300 px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="種類名"
-              />
-              <select
-                value={spaceType.defaultColor}
-                onChange={(event) =>
-                  onUpdateSpaceType(index, { defaultColor: event.target.value })
-                }
-                className="rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                {colorOptions.map((colorOption) => (
-                  <option key={colorOption.value} value={colorOption.value}>
-                    {colorOption.label}
-                  </option>
-                ))}
-              </select>
-              <button
-                type="button"
-                onClick={() => onRemoveSpaceType(index)}
-                className="flex items-center justify-center gap-2 rounded-lg bg-gray-200 px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-300"
-              >
-                <Trash2 className="h-4 w-4" /> 削除
-              </button>
+              <div className="grid grid-cols-1 gap-2 md:grid-cols-[1fr_auto]">
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={spaceType.label}
+                    onChange={(event) =>
+                      onUpdateSpaceType(index, { label: event.target.value })
+                    }
+                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="種類名"
+                  />
+                  <div className="text-xs font-bold text-gray-500">
+                    この種類の標準色
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onRemoveSpaceType(index)}
+                  disabled={!spaceType.isCustom}
+                  className="flex items-center justify-center gap-2 rounded-lg bg-gray-200 px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Trash2 className="h-4 w-4" /> 削除
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                {colorOptions.map((colorOption) => {
+                  const colorTheme = getBoardColorTheme(
+                    colorOption.value,
+                    colorOptions,
+                  );
+
+                  return (
+                    <button
+                      key={`${spaceType.value}-${colorOption.value}`}
+                      type="button"
+                      onClick={() =>
+                        onUpdateSpaceType(index, {
+                          defaultColor: colorOption.value,
+                        })
+                      }
+                      className={`rounded-xl border-2 px-3 py-3 text-sm font-bold shadow-sm transition-all ${
+                        spaceType.defaultColor === colorOption.value
+                          ? "ring-4 ring-offset-2 ring-gray-300"
+                          : "opacity-85 hover:opacity-100"
+                      }`}
+                      style={{
+                        backgroundColor: colorTheme.fillColor,
+                        borderColor: colorTheme.borderColor,
+                        color: colorTheme.textColor,
+                      }}
+                    >
+                      {colorOption.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           ))}
         </div>

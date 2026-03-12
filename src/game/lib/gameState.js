@@ -7,27 +7,31 @@ import { BOARD_CANVAS, BOARD_NODE_SIZE, getBoardLayout } from "./boardMap.js";
 export const DEFAULT_JOB_OPTIONS = jobOptions;
 export const JOB_OPTIONS = DEFAULT_JOB_OPTIONS;
 export const PLAYER_CONFIG = playerConfig;
-export const BOARD_COLOR_OPTIONS = [
-  { value: "red", label: "赤" },
-  { value: "blue", label: "青" },
-  { value: "green", label: "緑" },
-  { value: "purple", label: "紫" },
-  { value: "orange", label: "オレンジ" },
-  { value: "white", label: "白" },
+export const DEFAULT_BOARD_COLOR_OPTIONS = [
+  { value: "red", label: "赤", fill: "#ef4444" },
+  { value: "blue", label: "青", fill: "#3b82f6" },
+  { value: "green", label: "緑", fill: "#4ade80" },
+  { value: "purple", label: "紫", fill: "#9333ea" },
+  { value: "orange", label: "オレンジ", fill: "#fb923c" },
+  { value: "white", label: "白", fill: "#ffffff" },
 ];
+export const BOARD_COLOR_OPTIONS = DEFAULT_BOARD_COLOR_OPTIONS;
 export const DEFAULT_SPACE_TYPE_OPTIONS = [
-  { value: "start", label: "スタート", defaultColor: "blue" },
-  { value: "normal", label: "通常", defaultColor: "blue" },
-  { value: "lucky", label: "ラッキー", defaultColor: "blue" },
-  { value: "danger", label: "ピンチ", defaultColor: "red" },
-  { value: "payday", label: "給料日", defaultColor: "green" },
-  { value: "stop", label: "停止", defaultColor: "purple" },
-  { value: "goal", label: "ゴール", defaultColor: "purple" },
+  { value: "start", label: "スタート", defaultColor: "blue", isCustom: false },
+  { value: "normal", label: "通常", defaultColor: "blue", isCustom: false },
+  { value: "lucky", label: "ラッキー", defaultColor: "blue", isCustom: false },
+  { value: "danger", label: "ピンチ", defaultColor: "red", isCustom: false },
+  { value: "payday", label: "給料日", defaultColor: "green", isCustom: false },
+  { value: "stop", label: "停止", defaultColor: "purple", isCustom: false },
+  { value: "goal", label: "ゴール", defaultColor: "purple", isCustom: false },
 ];
 
 const numberFormatter = new Intl.NumberFormat("ja-JP", {
   maximumFractionDigits: 0,
 });
+const DEFAULT_BOARD_COLOR_VALUE = "blue";
+const DEFAULT_CUSTOM_BOARD_COLOR = "#94a3b8";
+const HEX_COLOR_PATTERN = /^#(?:[0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
 
 const cloneJson = (value) => JSON.parse(JSON.stringify(value));
 
@@ -39,11 +43,117 @@ const getNumber = (value, fallback) =>
 const getText = (value, fallback) =>
   typeof value === "string" && value.trim() ? value : fallback;
 
+const normalizeHexColor = (value, fallback) => {
+  if (typeof value !== "string" || !HEX_COLOR_PATTERN.test(value.trim())) {
+    return fallback;
+  }
+
+  const normalized = value.trim().toLowerCase();
+  if (normalized.length === 4) {
+    return `#${normalized[1]}${normalized[1]}${normalized[2]}${normalized[2]}${normalized[3]}${normalized[3]}`;
+  }
+
+  return normalized;
+};
+
+const getRgbFromHex = (hexColor) => {
+  const normalized = normalizeHexColor(hexColor, "#000000").slice(1);
+  return {
+    red: Number.parseInt(normalized.slice(0, 2), 16),
+    green: Number.parseInt(normalized.slice(2, 4), 16),
+    blue: Number.parseInt(normalized.slice(4, 6), 16),
+  };
+};
+
+const adjustHexColor = (hexColor, amount) => {
+  const { red, green, blue } = getRgbFromHex(hexColor);
+  const adjustChannel = (channel) => clamp(channel + amount, 0, 255);
+  return `#${adjustChannel(red).toString(16).padStart(2, "0")}${adjustChannel(green).toString(16).padStart(2, "0")}${adjustChannel(blue).toString(16).padStart(2, "0")}`;
+};
+
+const getRelativeLuminance = (channel) => {
+  const value = channel / 255;
+  return value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4;
+};
+
+const getAccessibleTextColor = (hexColor) => {
+  const { red, green, blue } = getRgbFromHex(hexColor);
+  const luminance =
+    0.2126 * getRelativeLuminance(red) +
+    0.7152 * getRelativeLuminance(green) +
+    0.0722 * getRelativeLuminance(blue);
+
+  return luminance > 0.45 ? "#111827" : "#ffffff";
+};
+
 const getJobByName = (name, options = JOB_OPTIONS) =>
   options.find((job) => job.name === name) ?? options[0];
 
 const normalizeLegacyCurrencyText = (text) =>
   text.replace(/([+-]?)\$([\d,]+)/g, (_, sign, amount) => `${sign}${amount}円`);
+
+const isBuiltInBoardColor = (value) =>
+  DEFAULT_BOARD_COLOR_OPTIONS.some((option) => option.value === value);
+
+const isBuiltInSpaceTypeValue = (value) =>
+  DEFAULT_SPACE_TYPE_OPTIONS.some((option) => option.value === value);
+
+const getFallbackBoardColorValue = (
+  boardColorOptions = DEFAULT_BOARD_COLOR_OPTIONS,
+) => {
+  if (
+    boardColorOptions.some(
+      (option) => option.value === DEFAULT_BOARD_COLOR_VALUE,
+    )
+  ) {
+    return DEFAULT_BOARD_COLOR_VALUE;
+  }
+
+  return boardColorOptions[0]?.value ?? DEFAULT_BOARD_COLOR_OPTIONS[0].value;
+};
+
+export const normalizeBoardColorOptions = (rawBoardColorOptions) => {
+  const rawOptions = Array.isArray(rawBoardColorOptions)
+    ? rawBoardColorOptions
+    : [];
+  const rawByValue = new Map(
+    rawOptions
+      .filter((option) => typeof option?.value === "string")
+      .map((option) => [option.value, option]),
+  );
+
+  const normalizedDefaults = DEFAULT_BOARD_COLOR_OPTIONS.map(
+    (defaultOption) => {
+      const rawOption = rawByValue.get(defaultOption.value);
+      return {
+        value: defaultOption.value,
+        label: getText(rawOption?.label, defaultOption.label),
+        fill: normalizeHexColor(rawOption?.fill, defaultOption.fill),
+        isCustom: false,
+      };
+    },
+  );
+
+  const usedValues = new Set(normalizedDefaults.map((option) => option.value));
+  const normalizedCustoms = rawOptions
+    .map((option, index) => {
+      const value = getText(option?.value, `custom-color-${index + 1}`);
+      if (usedValues.has(value) || isBuiltInBoardColor(value)) {
+        return null;
+      }
+      usedValues.add(value);
+
+      return {
+        value,
+        label: getText(option?.label, `追加色 ${index + 1}`),
+        fill: normalizeHexColor(option?.fill, DEFAULT_CUSTOM_BOARD_COLOR),
+        isCustom: true,
+      };
+    })
+    .filter(Boolean);
+
+  return [...normalizedDefaults, ...normalizedCustoms];
+};
 
 export const normalizeJobOptions = (rawJobOptions) => {
   if (!Array.isArray(rawJobOptions) || rawJobOptions.length === 0) {
@@ -71,10 +181,13 @@ export const normalizeJobOptions = (rawJobOptions) => {
   return normalized.length > 0 ? normalized : cloneJson(DEFAULT_JOB_OPTIONS);
 };
 
-const isBoardColor = (value) =>
-  BOARD_COLOR_OPTIONS.some((option) => option.value === value);
+const isBoardColor = (value, boardColorOptions = DEFAULT_BOARD_COLOR_OPTIONS) =>
+  boardColorOptions.some((option) => option.value === value);
 
-export const normalizeSpaceTypeOptions = (rawSpaceTypeOptions) => {
+export const normalizeSpaceTypeOptions = (
+  rawSpaceTypeOptions,
+  boardColorOptions = DEFAULT_BOARD_COLOR_OPTIONS,
+) => {
   if (!Array.isArray(rawSpaceTypeOptions) || rawSpaceTypeOptions.length === 0) {
     return cloneJson(DEFAULT_SPACE_TYPE_OPTIONS);
   }
@@ -97,9 +210,10 @@ export const normalizeSpaceTypeOptions = (rawSpaceTypeOptions) => {
       return {
         value,
         label: getText(spaceType?.label, fallback.label),
-        defaultColor: isBoardColor(spaceType?.defaultColor)
+        defaultColor: isBoardColor(spaceType?.defaultColor, boardColorOptions)
           ? spaceType.defaultColor
-          : fallback.defaultColor,
+          : getFallbackBoardColorValue(boardColorOptions),
+        isCustom: !isBuiltInSpaceTypeValue(value),
       };
     })
     .filter(Boolean);
@@ -109,7 +223,11 @@ export const normalizeSpaceTypeOptions = (rawSpaceTypeOptions) => {
     : cloneJson(DEFAULT_SPACE_TYPE_OPTIONS);
 };
 
-export const ensureSpaceTypeOptionsForBoard = (spaceTypeOptions, board) => {
+export const ensureSpaceTypeOptionsForBoard = (
+  spaceTypeOptions,
+  board,
+  boardColorOptions = DEFAULT_BOARD_COLOR_OPTIONS,
+) => {
   const nextOptions = [...spaceTypeOptions];
   const knownValues = new Set(nextOptions.map((spaceType) => spaceType.value));
 
@@ -119,7 +237,8 @@ export const ensureSpaceTypeOptionsForBoard = (spaceTypeOptions, board) => {
       nextOptions.push({
         value: space.type,
         label: space.type,
-        defaultColor: "blue",
+        defaultColor: getFallbackBoardColorValue(boardColorOptions),
+        isCustom: true,
       });
     }
   });
@@ -131,31 +250,68 @@ const getBoardColor = (
   value,
   type = "normal",
   spaceTypeOptions = DEFAULT_SPACE_TYPE_OPTIONS,
+  boardColorOptions = DEFAULT_BOARD_COLOR_OPTIONS,
 ) => {
-  if (isBoardColor(value)) {
+  if (isBoardColor(value, boardColorOptions)) {
     return value;
   }
 
   const matchingType = spaceTypeOptions.find(
     (spaceType) => spaceType.value === type,
   );
-  if (matchingType && isBoardColor(matchingType.defaultColor)) {
+  if (
+    matchingType &&
+    isBoardColor(matchingType.defaultColor, boardColorOptions)
+  ) {
     return matchingType.defaultColor;
   }
 
   if (type === "danger") {
-    return "red";
+    return isBoardColor("red", boardColorOptions)
+      ? "red"
+      : getFallbackBoardColorValue(boardColorOptions);
   }
 
   if (type === "payday") {
-    return "green";
+    return isBoardColor("green", boardColorOptions)
+      ? "green"
+      : getFallbackBoardColorValue(boardColorOptions);
   }
 
   if (type === "stop" || type === "goal") {
-    return "purple";
+    return isBoardColor("purple", boardColorOptions)
+      ? "purple"
+      : getFallbackBoardColorValue(boardColorOptions);
   }
 
-  return "blue";
+  return getFallbackBoardColorValue(boardColorOptions);
+};
+
+export const getBoardColorOption = (
+  value,
+  boardColorOptions = DEFAULT_BOARD_COLOR_OPTIONS,
+) =>
+  boardColorOptions.find((option) => option.value === value) ??
+  boardColorOptions.find(
+    (option) => option.value === getFallbackBoardColorValue(boardColorOptions),
+  ) ??
+  DEFAULT_BOARD_COLOR_OPTIONS.find(
+    (option) => option.value === DEFAULT_BOARD_COLOR_VALUE,
+  ) ??
+  DEFAULT_BOARD_COLOR_OPTIONS[0];
+
+export const getBoardColorTheme = (
+  value,
+  boardColorOptions = DEFAULT_BOARD_COLOR_OPTIONS,
+) => {
+  const option = getBoardColorOption(value, boardColorOptions);
+  const fillColor = normalizeHexColor(option?.fill, "#3b82f6");
+
+  return {
+    fillColor,
+    borderColor: adjustHexColor(fillColor, fillColor === "#ffffff" ? -40 : -28),
+    textColor: getAccessibleTextColor(fillColor),
+  };
 };
 
 export const clampBoardPoint = (x, y) => {
@@ -180,6 +336,7 @@ const normalizeSpace = (
   index,
   layout,
   spaceTypeOptions = DEFAULT_SPACE_TYPE_OPTIONS,
+  boardColorOptions = DEFAULT_BOARD_COLOR_OPTIONS,
 ) => {
   const defaultPosition = layout[index];
   const position = clampBoardPoint(
@@ -197,7 +354,12 @@ const normalizeSpace = (
     money: getNumber(space?.money, 0),
     addCarPeople: getNumber(space?.addCarPeople, 0),
     addDebt: getNumber(space?.addDebt, 0),
-    color: getBoardColor(space?.color, space?.type, spaceTypeOptions),
+    color: getBoardColor(
+      space?.color,
+      space?.type,
+      spaceTypeOptions,
+      boardColorOptions,
+    ),
     x: position.x,
     y: position.y,
   };
@@ -270,14 +432,24 @@ export const createInitialPlayers = (
 export const createInitialBoard = () => {
   const layout = getBoardLayout(boardSpacesData.length);
   return cloneJson(boardSpacesData).map((space, index) =>
-    normalizeSpace(space, index, layout, DEFAULT_SPACE_TYPE_OPTIONS),
+    normalizeSpace(
+      space,
+      index,
+      layout,
+      DEFAULT_SPACE_TYPE_OPTIONS,
+      DEFAULT_BOARD_COLOR_OPTIONS,
+    ),
   );
 };
 
 export const createInitialGameState = () => {
   const normalizedJobOptions = normalizeJobOptions(JOB_OPTIONS);
+  const normalizedBoardColorOptions = normalizeBoardColorOptions(
+    DEFAULT_BOARD_COLOR_OPTIONS,
+  );
   const normalizedSpaceTypeOptions = normalizeSpaceTypeOptions(
     DEFAULT_SPACE_TYPE_OPTIONS,
+    normalizedBoardColorOptions,
   );
 
   return {
@@ -285,6 +457,7 @@ export const createInitialGameState = () => {
     branches: [],
     backgroundImageUrl: null,
     jobOptions: normalizedJobOptions,
+    boardColorOptions: normalizedBoardColorOptions,
     spaceTypeOptions: normalizedSpaceTypeOptions,
     players: createInitialPlayers(undefined, normalizedJobOptions),
     currentPlayerIndex: 0,
@@ -295,6 +468,7 @@ export const createInitialGameState = () => {
 export const normalizeBoard = (
   board,
   spaceTypeOptions = DEFAULT_SPACE_TYPE_OPTIONS,
+  boardColorOptions = DEFAULT_BOARD_COLOR_OPTIONS,
 ) => {
   if (!Array.isArray(board) || board.length === 0) {
     return createInitialBoard();
@@ -302,7 +476,7 @@ export const normalizeBoard = (
 
   const layout = getBoardLayout(board.length);
   return board.map((space, index) =>
-    normalizeSpace(space, index, layout, spaceTypeOptions),
+    normalizeSpace(space, index, layout, spaceTypeOptions, boardColorOptions),
   );
 };
 
@@ -327,14 +501,23 @@ export const normalizeGameState = (rawState) => {
   const jobOptions = normalizeJobOptions(
     rawState?.jobOptions ?? defaultState.jobOptions,
   );
+  const boardColorOptions = normalizeBoardColorOptions(
+    rawState?.boardColorOptions ?? defaultState.boardColorOptions,
+  );
   const initialSpaceTypeOptions = normalizeSpaceTypeOptions(
     rawState?.spaceTypeOptions ?? defaultState.spaceTypeOptions,
+    boardColorOptions,
   );
-  const board = normalizeBoard(rawState?.board, initialSpaceTypeOptions);
+  const board = normalizeBoard(
+    rawState?.board,
+    initialSpaceTypeOptions,
+    boardColorOptions,
+  );
   const branches = normalizeBranches(rawState?.branches, board.length);
   const spaceTypeOptions = ensureSpaceTypeOptionsForBoard(
     initialSpaceTypeOptions,
     board,
+    boardColorOptions,
   );
   const players = normalizePlayers(rawState?.players, jobOptions).map(
     (player) => ({
@@ -352,6 +535,7 @@ export const normalizeGameState = (rawState) => {
         ? rawState.backgroundImageUrl
         : defaultState.backgroundImageUrl,
     jobOptions,
+    boardColorOptions,
     spaceTypeOptions,
     players,
     currentPlayerIndex: clamp(

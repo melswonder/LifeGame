@@ -1,17 +1,10 @@
 import { Sparkles, X } from "lucide-react";
-
-const COLOR_STYLES = {
-  red: "border-red-700 bg-red-500 text-white",
-  blue: "border-blue-700 bg-blue-500 text-white",
-  green: "border-green-600 bg-green-400 text-green-950",
-  purple: "border-purple-800 bg-purple-600 text-white",
-  orange: "border-orange-600 bg-orange-400 text-orange-950",
-  white: "border-gray-300 bg-white text-gray-800",
-};
+import { getBoardColorTheme } from "../../../game/lib/gameState.js";
 
 export default function BoardSpaceDetailsModal({
   isOpen,
   space,
+  colorOptions,
   spaceTypeOptions,
   onClose,
 }) {
@@ -19,7 +12,7 @@ export default function BoardSpaceDetailsModal({
     return null;
   }
 
-  const colorStyle = COLOR_STYLES[space.color] ?? COLOR_STYLES.blue;
+  const colorTheme = getBoardColorTheme(space.color, colorOptions);
   const typeLabel =
     spaceTypeOptions?.find((spaceType) => spaceType.value === space.type)
       ?.label ??
@@ -32,10 +25,10 @@ export default function BoardSpaceDetailsModal({
       onClick={onClose}
     >
       <div
-        className="board-space-preview-in w-full max-w-lg rounded-[28px] border border-white/70 bg-white shadow-2xl"
+        className="board-space-preview-in max-h-[88vh] w-full max-w-2xl overflow-hidden rounded-[28px] border border-white/70 bg-white shadow-2xl"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className="relative overflow-hidden rounded-t-[28px] bg-[linear-gradient(135deg,_#111827_0%,_#1f2937_55%,_#374151_100%)] px-6 py-5 text-white">
+        <div className="relative overflow-hidden rounded-t-[28px] bg-[linear-gradient(135deg,_#111827_0%,_#1f2937_55%,_#374151_100%)] px-7 py-6 text-white">
           <div className="absolute -right-10 -top-10 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
           <div className="absolute -left-6 bottom-0 h-20 w-20 rounded-full bg-amber-300/20 blur-xl" />
           <div className="relative flex items-start justify-between gap-4">
@@ -45,7 +38,12 @@ export default function BoardSpaceDetailsModal({
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <div
-                  className={`rounded-full border px-3 py-1 text-xs font-black shadow-sm ${colorStyle}`}
+                  className="rounded-full border px-3 py-1 text-xs font-black shadow-sm"
+                  style={{
+                    backgroundColor: colorTheme.fillColor,
+                    borderColor: colorTheme.borderColor,
+                    color: colorTheme.textColor,
+                  }}
                 >
                   マス {space.id}
                 </div>
@@ -68,12 +66,12 @@ export default function BoardSpaceDetailsModal({
           </div>
         </div>
 
-        <div className="space-y-5 p-6">
-          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-            <div className="mb-2 text-xs font-bold uppercase tracking-wide text-gray-500">
+        <div className="max-h-[calc(88vh-150px)] space-y-5 overflow-y-auto p-7">
+          <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <div className="mb-3 text-xs font-bold uppercase tracking-wide text-gray-500">
               内容
             </div>
-            <div className="text-base font-bold leading-relaxed text-gray-800">
+            <div className="whitespace-pre-wrap break-words text-lg font-bold leading-relaxed text-gray-800">
               {space.text}
             </div>
           </div>

@@ -21,33 +21,7 @@ import {
   getBoardLayout,
   SCENIC_TRAILS,
 } from "../../../game/lib/boardMap.js";
-
-const SPACE_COLOR_STYLES = {
-  red: {
-    bgColor: "bg-red-500 border-red-700",
-    textColor: "text-white",
-  },
-  blue: {
-    bgColor: "bg-blue-500 border-blue-700",
-    textColor: "text-white",
-  },
-  green: {
-    bgColor: "bg-green-400 border-green-600",
-    textColor: "text-green-950",
-  },
-  purple: {
-    bgColor: "bg-purple-600 border-purple-800",
-    textColor: "text-white",
-  },
-  orange: {
-    bgColor: "bg-orange-400 border-orange-600",
-    textColor: "text-orange-950",
-  },
-  white: {
-    bgColor: "bg-white border-gray-300",
-    textColor: "text-gray-800",
-  },
-};
+import { getBoardColorTheme } from "../../../game/lib/gameState.js";
 
 const MIN_ZOOM = 0.2;
 const MAX_ZOOM = 1.1;
@@ -60,6 +34,7 @@ export default function BoardArea({
   board,
   branches,
   backgroundImageUrl,
+  colorOptions,
   players,
   isEditing,
   mapEditTool,
@@ -537,8 +512,7 @@ export default function BoardArea({
               const playersHere = players.filter(
                 (player) => player.position === space.id,
               );
-              const { bgColor, textColor } =
-                SPACE_COLOR_STYLES[space.color] ?? SPACE_COLOR_STYLES.blue;
+              const colorTheme = getBoardColorTheme(space.color, colorOptions);
               const accentClass =
                 space.type === "stop"
                   ? "scale-[1.08] ring-4 ring-white/70"
@@ -554,7 +528,7 @@ export default function BoardArea({
                   key={space.id}
                   type="button"
                   data-space-button="true"
-                  className={`absolute z-20 flex aspect-square flex-col items-center justify-center rounded-[28px] border-4 p-2 text-center shadow-[0_10px_25px_rgba(15,23,42,0.18)] transition-transform hover:-translate-y-1 ${bgColor} ${accentClass} ${
+                  className={`absolute z-20 flex aspect-square flex-col items-center justify-center rounded-[28px] border-4 p-2 text-center shadow-[0_10px_25px_rgba(15,23,42,0.18)] transition-transform hover:-translate-y-1 ${accentClass} ${
                     isEditing && mapEditTool === "space"
                       ? "cursor-pointer ring-blue-400 hover:ring-4"
                       : isEditing && mapEditTool === "branch"
@@ -562,6 +536,9 @@ export default function BoardArea({
                         : "cursor-default"
                   }`}
                   style={{
+                    backgroundColor: colorTheme.fillColor,
+                    borderColor: colorTheme.borderColor,
+                    color: colorTheme.textColor,
                     left: space.x - BOARD_NODE_SIZE / 2,
                     top: space.y - BOARD_NODE_SIZE / 2,
                     width: BOARD_NODE_SIZE,
@@ -718,9 +695,7 @@ export default function BoardArea({
                     </div>
                   )}
 
-                  <div
-                    className={`line-clamp-3 text-[10px] font-bold leading-tight ${textColor}`}
-                  >
+                  <div className="line-clamp-3 text-[10px] font-bold leading-tight">
                     {space.text}
                   </div>
 

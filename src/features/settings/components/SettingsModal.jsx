@@ -8,7 +8,6 @@ import {
   Minus,
   Plus,
   RotateCcw,
-  Settings,
   SlidersHorizontal,
   Trash2,
   Upload,
@@ -16,10 +15,7 @@ import {
   Users,
   X,
 } from "lucide-react";
-import {
-  formatCurrency,
-  getBoardColorTheme,
-} from "../../../game/lib/gameState.js";
+import { formatCurrency } from "../../../game/lib/gameState.js";
 
 const SETTING_SECTIONS = [
   { id: "general", label: "一般", icon: SlidersHorizontal },
@@ -34,12 +30,12 @@ export default function SettingsModal({
   setIsEditing,
   players,
   jobOptions,
+  spaceTypeOptions,
   minPlayers,
   maxPlayers,
   boardCount,
   minBoardSpaces,
   maxBoardSpaces,
-  spaceTypeOptions,
   colorOptions,
   backgroundImageUrl,
   onUpdatePlayer,
@@ -49,8 +45,7 @@ export default function SettingsModal({
   onUpdateBoardColor,
   onRemoveBoardColor,
   onAddSpaceType,
-  onUpdateSpaceType,
-  onRemoveSpaceType,
+  onUpdateSpaceTypeLabel,
   onUpdateBackgroundImage,
   onClearBackgroundImage,
   onAddJobOption,
@@ -254,76 +249,30 @@ export default function SettingsModal({
       </div>
 
       <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4">
-        <div className="mb-3 flex items-center gap-2 text-sm font-black text-gray-900">
-          <Settings className="h-5 w-5" />
-          マス種類の管理
+        <div className="mb-3 text-sm font-black text-gray-900">
+          マスタグ表示名
         </div>
         <div className="mb-3 text-xs text-gray-500">
-          マス色と同じように、種類を追加できます。標準種類は残したまま、追加種類だけ削除できます。
+          プレビューに表示される「通常」などのタグ名を変更できます。
         </div>
         <div className="space-y-3">
           {spaceTypeOptions.map((spaceType, index) => (
             <div
-              key={`space-type-${spaceType.value}`}
-              className="space-y-3 rounded-xl border border-gray-200 bg-white p-3"
+              key={`space-type-label-${spaceType.value}`}
+              className="rounded-xl border border-gray-200 bg-white p-3"
             >
-              <div className="grid grid-cols-1 gap-2 md:grid-cols-[1fr_auto]">
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    value={spaceType.label}
-                    onChange={(event) =>
-                      onUpdateSpaceType(index, { label: event.target.value })
-                    }
-                    className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="種類名"
-                  />
-                  <div className="text-xs font-bold text-gray-500">
-                    この種類の標準色
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => onRemoveSpaceType(index)}
-                  disabled={!spaceType.isCustom}
-                  className="flex items-center justify-center gap-2 rounded-lg bg-gray-200 px-3 py-2 text-sm font-bold text-gray-800 hover:bg-gray-300 disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <Trash2 className="h-4 w-4" /> 削除
-                </button>
+              <div className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-gray-400">
+                {spaceType.value}
               </div>
-
-              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-                {colorOptions.map((colorOption) => {
-                  const colorTheme = getBoardColorTheme(
-                    colorOption.value,
-                    colorOptions,
-                  );
-
-                  return (
-                    <button
-                      key={`${spaceType.value}-${colorOption.value}`}
-                      type="button"
-                      onClick={() =>
-                        onUpdateSpaceType(index, {
-                          defaultColor: colorOption.value,
-                        })
-                      }
-                      className={`rounded-xl border-2 px-3 py-3 text-sm font-bold shadow-sm transition-all ${
-                        spaceType.defaultColor === colorOption.value
-                          ? "ring-4 ring-offset-2 ring-gray-300"
-                          : "opacity-85 hover:opacity-100"
-                      }`}
-                      style={{
-                        backgroundColor: colorTheme.fillColor,
-                        borderColor: colorTheme.borderColor,
-                        color: colorTheme.textColor,
-                      }}
-                    >
-                      {colorOption.label}
-                    </button>
-                  );
-                })}
-              </div>
+              <input
+                type="text"
+                value={spaceType.label}
+                onChange={(event) =>
+                  onUpdateSpaceTypeLabel(index, event.target.value)
+                }
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="タグ名"
+              />
             </div>
           ))}
         </div>
@@ -332,7 +281,7 @@ export default function SettingsModal({
           onClick={onAddSpaceType}
           className="mt-3 flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-bold text-white hover:bg-gray-800"
         >
-          <Plus className="h-4 w-4" /> マス種類を追加
+          <Plus className="h-4 w-4" /> タグを追加
         </button>
       </div>
 

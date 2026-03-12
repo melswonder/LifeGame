@@ -1,10 +1,8 @@
 import { Sparkles, X } from "lucide-react";
-import { getBoardColorTheme } from "../../../game/lib/gameState.js";
 
 export default function BoardSpaceDetailsModal({
   isOpen,
   space,
-  colorOptions,
   spaceTypeOptions,
   onClose,
 }) {
@@ -12,11 +10,11 @@ export default function BoardSpaceDetailsModal({
     return null;
   }
 
-  const colorTheme = getBoardColorTheme(space.color, colorOptions);
   const typeLabel =
-    spaceTypeOptions?.find((spaceType) => spaceType.value === space.type)
-      ?.label ??
-    space.type ??
+    spaceTypeOptions
+      ?.find((spaceType) => spaceType.value === space.type)
+      ?.label?.trim() ||
+    space.type ||
     "通常";
 
   return (
@@ -37,16 +35,6 @@ export default function BoardSpaceDetailsModal({
                 Space Preview
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <div
-                  className="rounded-full border px-3 py-1 text-xs font-black shadow-sm"
-                  style={{
-                    backgroundColor: colorTheme.fillColor,
-                    borderColor: colorTheme.borderColor,
-                    color: colorTheme.textColor,
-                  }}
-                >
-                  マス {space.id}
-                </div>
                 <div className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-bold text-gray-100">
                   {typeLabel}
                 </div>

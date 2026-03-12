@@ -8,11 +8,13 @@ import {
 export default function BoardSpaceEditorModal({
   isOpen,
   space,
+  spaceTypeOptions,
   colorOptions,
   onClose,
   onSave,
 }) {
   const [text, setText] = useState("");
+  const [type, setType] = useState("normal");
   const [color, setColor] = useState("blue");
   const [money, setMoney] = useState(0);
   const [addCarPeople, setAddCarPeople] = useState(0);
@@ -26,6 +28,7 @@ export default function BoardSpaceEditorModal({
     }
 
     setText(space.text ?? "");
+    setType(space.type ?? "normal");
     setColor(space.color ?? "blue");
     setMoney(space.money ?? 0);
     setAddCarPeople(space.addCarPeople ?? 0);
@@ -69,6 +72,23 @@ export default function BoardSpaceEditorModal({
               className="w-full resize-none rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="ここに表示する内容を入力"
             />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-bold text-gray-800">
+              マスタグ
+            </label>
+            <select
+              value={type}
+              onChange={(event) => setType(event.target.value)}
+              className="w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-sm font-bold text-gray-800 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              {spaceTypeOptions.map((spaceType) => (
+                <option key={spaceType.value} value={spaceType.value}>
+                  {spaceType.label?.trim() || spaceType.value}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -154,6 +174,7 @@ export default function BoardSpaceEditorModal({
                 onSave({
                   ...space,
                   text,
+                  type,
                   color,
                   money,
                   addCarPeople,

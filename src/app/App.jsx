@@ -429,6 +429,7 @@ export default function App() {
         setIsEditing={setIsEditing}
         players={players}
         jobOptions={jobOptions}
+        spaceTypeOptions={spaceTypeOptions}
         minPlayers={PLAYER_CONFIG.minPlayerCount}
         maxPlayers={PLAYER_CONFIG.maxPlayerCount}
         boardCount={board.length}
@@ -437,7 +438,6 @@ export default function App() {
         onUpdatePlayer={handleUpdatePlayer}
         onChangePlayerCount={handleChangePlayerCount}
         onChangeBoardCount={handleChangeBoardCount}
-        spaceTypeOptions={spaceTypeOptions}
         colorOptions={boardColorOptions}
         backgroundImageUrl={backgroundImageUrl}
         onUpdateBackgroundImage={setBackgroundImageUrl}
@@ -518,6 +518,37 @@ export default function App() {
               space.color === removedColor.value
                 ? { ...space, color: fallbackColor.value }
                 : space,
+            ),
+          );
+        }}
+        onAddSpaceType={() => {
+          setSpaceTypeOptions((previous) => {
+            const nextIndex = previous.length + 1;
+            let value = `custom-type-${nextIndex}`;
+            let suffix = nextIndex;
+
+            while (previous.some((spaceType) => spaceType.value === value)) {
+              suffix += 1;
+              value = `custom-type-${suffix}`;
+            }
+
+            return [
+              ...previous,
+              {
+                value,
+                label: `新しいタグ ${nextIndex}`,
+                defaultColor: boardColorOptions[0]?.value ?? "blue",
+                isCustom: true,
+              },
+            ];
+          });
+        }}
+        onUpdateSpaceTypeLabel={(index, nextLabel) => {
+          setSpaceTypeOptions((previous) =>
+            previous.map((spaceType, spaceTypeIndex) =>
+              spaceTypeIndex === index
+                ? { ...spaceType, label: nextLabel }
+                : spaceType,
             ),
           );
         }}
@@ -603,103 +634,6 @@ export default function App() {
             ),
           );
         }}
-        onAddSpaceType={() => {
-          setSpaceTypeOptions((previous) => {
-            const nextIndex = previous.length + 1;
-            const baseValue = `custom-type-${nextIndex}`;
-            let value = baseValue;
-            let suffix = nextIndex;
-
-            while (previous.some((spaceType) => spaceType.value === value)) {
-              suffix += 1;
-              value = `custom-type-${suffix}`;
-            }
-
-            return [
-              ...previous,
-              {
-                value,
-                label: `新しい種類 ${nextIndex}`,
-                defaultColor: boardColorOptions[0]?.value ?? "blue",
-                isCustom: true,
-              },
-            ];
-          });
-        }}
-        onUpdateSpaceType={(index, updates) => {
-          const currentSpaceType = spaceTypeOptions[index];
-          if (!currentSpaceType) {
-            return;
-          }
-
-          const nextLabel =
-            typeof updates.label === "string" && updates.label.trim()
-              ? updates.label.trim()
-              : currentSpaceType.label;
-          const nextDefaultColor = boardColorOptions.some(
-            (option) => option.value === updates.defaultColor,
-          )
-            ? updates.defaultColor
-            : currentSpaceType.defaultColor;
-
-          const nextSpaceType = {
-            ...currentSpaceType,
-            label: nextLabel,
-            defaultColor: nextDefaultColor,
-          };
-          const nextSpaceTypeOptions = spaceTypeOptions.map(
-            (spaceType, spaceTypeIndex) =>
-              spaceTypeIndex === index ? nextSpaceType : spaceType,
-          );
-
-          setSpaceTypeOptions(nextSpaceTypeOptions);
-          if (nextDefaultColor !== currentSpaceType.defaultColor) {
-            setBoard((previous) =>
-              previous.map((space) =>
-                space.type === currentSpaceType.value
-                  ? { ...space, color: nextDefaultColor }
-                  : space,
-              ),
-            );
-          }
-        }}
-        onRemoveSpaceType={(index) => {
-          const removedSpaceType = spaceTypeOptions[index];
-          if (!removedSpaceType) {
-            return;
-          }
-
-          if (!removedSpaceType.isCustom) {
-            window.alert("標準のマス種類は削除できません。");
-            return;
-          }
-
-          if (spaceTypeOptions.length <= 1) {
-            window.alert("マスの種類は最低1つ必要です。");
-            return;
-          }
-
-          const nextSpaceTypeOptions = spaceTypeOptions.filter(
-            (_, spaceTypeIndex) => spaceTypeIndex !== index,
-          );
-          const fallbackSpaceType =
-            nextSpaceTypeOptions.find(
-              (spaceType) => spaceType.value === "normal",
-            ) ?? nextSpaceTypeOptions[0];
-
-          setSpaceTypeOptions(nextSpaceTypeOptions);
-          setBoard((previous) =>
-            previous.map((space) =>
-              space.type === removedSpaceType.value
-                ? {
-                    ...space,
-                    type: fallbackSpaceType.value,
-                    color: fallbackSpaceType.defaultColor,
-                  }
-                : space,
-            ),
-          );
-        }}
         onExportState={handleExportState}
         onImportState={handleImportState}
         onResetState={handleResetState}
@@ -708,6 +642,7 @@ export default function App() {
       <BoardSpaceEditorModal
         isOpen={editingSpace !== null}
         space={editingSpace}
+        spaceTypeOptions={spaceTypeOptions}
         colorOptions={boardColorOptions}
         onClose={handleCloseSpaceEditor}
         onSave={(nextSpace) => {
@@ -719,7 +654,6 @@ export default function App() {
       <BoardSpaceDetailsModal
         isOpen={previewSpace !== null}
         space={previewSpace}
-        colorOptions={boardColorOptions}
         spaceTypeOptions={spaceTypeOptions}
         onClose={handleCloseSpacePreview}
       />
